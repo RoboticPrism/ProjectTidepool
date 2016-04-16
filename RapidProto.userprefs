@@ -1,0 +1,13 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workbench ActiveDocument="..\BitBucket\ProjectOnyx\Assets\Scripts\Controllers\PlayerController.cs">
+    <Files>
+      <File FileName="..\BitBucket\ProjectOnyx\Assets\Scripts\Controllers\PlayerController.cs" Line="125" Column="72" />
+      <File FileName="..\BitBucket\ProjectOnyx\Assets\Scripts\Effects\Effect.cs" Line="26" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
