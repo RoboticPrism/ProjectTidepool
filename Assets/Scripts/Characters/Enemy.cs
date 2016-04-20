@@ -130,10 +130,10 @@ public class Enemy : Creature {
 			rot_speed=0;
 			GetComponent<Rigidbody2D>().velocity=new Vector2(0,0);
 		}
-		if (number_mouth + number_body + number_spike + number_leg > 5 && level == 1) {
+		if (evo_points > 30 && level == 1) {
 			Upgrade();
 		}
-		if (number_mouth + number_body + number_spike + number_leg > 10 && level == 2) {
+		if (evo_points > 100 && level == 2) {
 			Upgrade();
 		}
 	}
@@ -183,10 +183,6 @@ public class Enemy : Creature {
 			this.Start();
 			active=true;
 		}
-		number_mouth = 0;
-		number_body = 0;
-		number_spike = 0;
-		number_leg = 0;
 
 	}
 

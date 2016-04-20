@@ -29,19 +29,23 @@ public class MousePlacer : MonoBehaviour {
 			                                       (Mathf.RoundToInt ((Input.mousePosition.y) / 32)-obj.y+player.transform.position.y),
 			                                       0);
 			*/
-			if (player.type == 1 && player.number_mouth>0) {
-				if(GetComponent<SpriteRenderer> ().sprite != mouth && player.number_mouth>0){
+			// place mouth
+			if (player.type == 1 && player.evo_points>20) {
+				if(GetComponent<SpriteRenderer> ().sprite != mouth){
 					GetComponent<SpriteRenderer> ().sprite = mouth;
 				}
-			} else if (player.type == 2 && player.number_body>0) {
+			// place body
+			} else if (player.type == 2 && player.evo_points>10) {
 				if(GetComponent<SpriteRenderer> ().sprite != body){
 					GetComponent<SpriteRenderer> ().sprite = body;
 				}
-			} else if (player.type == 3 && player.number_spike>0) {
+			// place spikes
+			} else if (player.type == 3 && player.evo_points>12) {
 				if(GetComponent<SpriteRenderer> ().sprite != spike){
 					GetComponent<SpriteRenderer> ().sprite = spike;
 				}
-			} else if (player.type == 4 && player.number_leg>0) {
+			// place leg
+			} else if (player.type == 4 && player.evo_points>10) {
 				if(GetComponent<SpriteRenderer> ().sprite != leg){
 					GetComponent<SpriteRenderer> ().sprite = leg;
 				}

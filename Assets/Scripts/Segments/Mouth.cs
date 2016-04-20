@@ -56,16 +56,16 @@ public class Mouth : Segment {
 			}
 			else if (col.collider.gameObject.GetComponent<Segment> ().creature == null) {
 				if(col.collider.gameObject.tag=="Core"){
-					creature.number_eaten_body+=2;
+					creature.evo_points+=10;
 				}
 				else if(col.collider.gameObject.tag=="Body"){
-					creature.number_eaten_body+=1;
+					creature.evo_points+=7;
 				}
 				else if(col.collider.gameObject.tag=="Spike"){
-					creature.number_eaten_spike+=1;
+					creature.evo_points+=5;
 				}
 				else if(col.collider.gameObject.tag=="Leg"){
-					creature.number_eaten_leg+=1;
+					creature.evo_points+=5;
 				}
 				Destroy (col.collider.gameObject);
 			}

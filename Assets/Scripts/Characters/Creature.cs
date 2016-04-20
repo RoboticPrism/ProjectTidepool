@@ -38,16 +38,12 @@ public class Creature : MonoBehaviour {
 
 
 	//Creature parts
-	public int number_mouth;
-	public int number_body;
-	public int number_spike;
-	public int number_leg;
+	//public int number_mouth;
+	//public int number_body;
+	//public int number_spike;
+	//public int number_leg;
 
-	public int number_eaten_mouth = 0;
-	public int number_eaten_body = 0;
-	public int number_eaten_spike = 0;
-	public int number_eaten_leg = 0;
-
+	public int evo_points;
 	// Use this for initialization
 	protected void Start () {
 		segments = new GameObject[height*2+1,width*2+1];
@@ -64,22 +60,7 @@ public class Creature : MonoBehaviour {
 	
 	// Update is called once per frame
 	protected void Update () {
-		if (number_eaten_mouth >= 5) {
-			number_mouth++;
-			number_eaten_mouth=0;
-		}
-		if (number_eaten_body >= 5) {
-			number_body++;
-			number_eaten_body=0;
-		}
-		if (number_eaten_spike >= 5) {
-			number_spike++;
-			number_eaten_spike=0;
-		}
-		if (number_eaten_leg >= 5) {
-			number_leg++;
-			number_eaten_leg=0;
-		}
+		
 	}
 
 
@@ -204,7 +185,8 @@ public class Creature : MonoBehaviour {
 	//Adds a new segment to a location (if possible) and adjusts the placeable chart, returns true if a new item was made
 	public void AddSegment(int x, int y, int rot, int type){
 		if(checkPlace(x+width,y+height)){
-			if(type==1 && number_mouth>0 && checkRot (x+width, y+height,rot)){
+			// place mouth
+			if(type==1 && evo_points>20 && checkRot (x+width, y+height,rot)){
 				segments[x+width,y+height] = (GameObject)Instantiate(mouth,
 				                                                     new Vector2(x+this.transform.position.x,
 				            y+this.transform.position.y), 
@@ -214,9 +196,10 @@ public class Creature : MonoBehaviour {
 				segments[x+width, y+height].GetComponent<SpriteRenderer> ().color = playerColor;
 				segments[x+width, y+height].transform.localPosition= new Vector2(x,y);
 				setPlace (x+width,y+height,false);
-				number_mouth--;
+				evo_points-=20;
 			}
-			else if(type==2 && number_body>0){
+			// place body
+			else if(type==2 && evo_points>10){
 				segments[x+width,y+height] = (GameObject)Instantiate(body,
 				                                        new Vector2(x+this.transform.position.x,
 				            										y+this.transform.position.y), 
@@ -228,9 +211,10 @@ public class Creature : MonoBehaviour {
 				areaSetPlace(x+width,y+height,true);
 				setPlace (x+width,y+height,false);
 				tot_health+=2;
-				number_body--;
+				evo_points-=10;
 			}
-			else if(type==3 && number_spike>0 && checkRot (x+width, y+height,rot)){
+			// place spike
+			else if(type==3 && evo_points>12 && checkRot (x+width, y+height,rot)){
 				segments[x+width,y+height] = (GameObject)Instantiate(spike,
 				                                                     new Vector2(x+this.transform.position.x,
 				            													 y+this.transform.position.y), 
@@ -239,9 +223,9 @@ public class Creature : MonoBehaviour {
 				segments[x+width, y+height].GetComponent<Segment>().creature = this;
 				segments[x+width, y+height].transform.localPosition= new Vector2(x,y);
 				setPlace (x+width,y+height,false);
-				number_spike--;
+				evo_points-=12;
 			}
-			else if(type==4 && number_leg>0 && checkRot (x+width, y+height,rot)){
+			else if(type==4 && evo_points>10 && checkRot (x+width, y+height,rot)){
 				segments[x+width,y+height] = (GameObject)Instantiate(leg,
 				                                                     new Vector2(x+this.transform.position.x,
 				            													 y+this.transform.position.y), 
@@ -251,7 +235,7 @@ public class Creature : MonoBehaviour {
 				segments[x+width, y+height].GetComponent<SpriteRenderer> ().color = playerColor;
 				segments[x+width, y+height].transform.localPosition= new Vector2(x,y);
 				setPlace (x+width,y+height,false);
-				number_leg--;
+				evo_points-=10;
 				if(rot==0 || rot  == 180){
 					tot_rot_speed+=1;
 				}
@@ -265,7 +249,7 @@ public class Creature : MonoBehaviour {
 	public void RemoveSegment(int x, int y){
 		if (segments [x + width, y + height] != null) {
 			if (segments [x + width, y + height].transform.tag == "Mouth") {
-				number_mouth++;
+				evo_points+=20;
 				Destroy (segments [x + width, y + height]);
 				segments[x+width,y+height]=null;
 				setPlace (x + width, y + height, checkNeighbors (x + width, y + height));
@@ -284,7 +268,7 @@ public class Creature : MonoBehaviour {
 			}
 			else if (segments [x + width, y + height].transform.tag == "Body") {
 				tot_health-=2;
-				number_body++;
+				evo_points+=10;
 				Destroy (segments [x + width, y + height]);
 				segments[x+width,y+height]=null;
 				setPlace (x + width, y + height, checkNeighbors (x + width, y + height));
@@ -302,7 +286,7 @@ public class Creature : MonoBehaviour {
 				}
 			}
 			else if (segments [x + width, y + height].transform.tag == "Spike") {
-				number_spike++;
+				evo_points+=12;
 				Destroy (segments [x + width, y + height]);
 				segments[x+width,y+height]=null;
 				setPlace (x + width, y + height, checkNeighbors (x + width, y + height));
@@ -320,7 +304,7 @@ public class Creature : MonoBehaviour {
 				}
 			}
 			else if (segments [x + width, y + height].transform.tag == "Leg") {
-				number_leg++;
+				evo_points+=10;
 				Destroy (segments [x + width, y + height]);
 				segments[x+width,y+height]=null;
 				setPlace (x + width, y + height, checkNeighbors (x + width, y + height));

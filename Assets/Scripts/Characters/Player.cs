@@ -8,6 +8,7 @@ public class Player : Creature {
 	public GameObject BuildGrid;
 	public GameObject canvas;
 	public GameObject mousePlacer;
+	public GameObject EvoPoints;
 	public GameObject MouthCount;
 	public GameObject BodyCount;
 	public GameObject SpikeCount;
@@ -101,10 +102,11 @@ public class Player : Creature {
 			}
 			rot = 0;
 		}
-		MouthCount.GetComponent<Text>().text = "x" + number_mouth;
-		BodyCount.GetComponent<Text>().text = "x" + number_body;
-		SpikeCount.GetComponent<Text>().text = "x" + number_spike;
-		LegCount.GetComponent<Text>().text = "x" + number_leg;
+		EvoPoints.GetComponent<Text> ().text = evo_points.ToString();
+		MouthCount.GetComponent<Text>().text = "-20";
+		BodyCount.GetComponent<Text>().text = "-10";
+		SpikeCount.GetComponent<Text>().text = "-12";
+		LegCount.GetComponent<Text>().text = "-10";
 	}
 
 	void FixedUpdate(){
