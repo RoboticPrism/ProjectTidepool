@@ -53,7 +53,6 @@
      <Compile Include="Assets\Scripts\EnemySpawner.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
      <Compile Include="Assets\Scripts\MousePlacer.cs" />
-     <Compile Include="Assets\Scripts\SegmentButton.cs" />
      <Compile Include="Assets\Scripts\Segments\Body.cs" />
      <Compile Include="Assets\Scripts\Segments\Core.cs" />
      <Compile Include="Assets\Scripts\Segments\Leg.cs" />

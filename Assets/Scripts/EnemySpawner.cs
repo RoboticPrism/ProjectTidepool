@@ -26,7 +26,7 @@ public class EnemySpawner : MonoBehaviour {
 
 	void CreateEnemy(){
 		int r = Random.Range (0, 360);
-		int d = Random.Range (20,50);
+		int d = Random.Range (30,60);
 		int p = Random.Range (0, 10);
 		bool act = true;
 		if (player != null) {

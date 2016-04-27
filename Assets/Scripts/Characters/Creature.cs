@@ -6,11 +6,11 @@ public class Creature : MonoBehaviour {
 	public Color playerColor = new Color(255,255,255,255);
 
 	//Segment Prefabs
-	public GameObject core; //type 0
+	public GameObject core;
 	public GameObject mouth; //type 1
-	public GameObject body; //type 2
+	public GameObject body; //type 0
 	public GameObject spike; //type 3
-	public GameObject leg; //type 4
+	public GameObject leg; //type 2
 	public int level;
 
 	public Sprite CoreDead;
@@ -20,8 +20,8 @@ public class Creature : MonoBehaviour {
 	public int width = 10;
 
 	//Segment Storage
-	protected GameObject[,] segments;
-	protected bool[,] placeable;
+	public GameObject[,] segments;
+	public bool[,] placeable;
 
 
 	//Player stats
@@ -33,6 +33,7 @@ public class Creature : MonoBehaviour {
 	protected float tot_speed = 0;
 	protected float tot_rot_speed = 0;
 	protected float tot_energy = 0;
+	protected int weight = 1;
 	public int exp = 0;
 	protected bool dead = false;
 
@@ -185,22 +186,25 @@ public class Creature : MonoBehaviour {
 	//Adds a new segment to a location (if possible) and adjusts the placeable chart, returns true if a new item was made
 	public void AddSegment(int x, int y, int rot, int type){
 		if(checkPlace(x+width,y+height)){
-			// place mouth
-			if(type==1 && evo_points>20 && checkRot (x+width, y+height,rot)){
-				segments[x+width,y+height] = (GameObject)Instantiate(mouth,
+			// place body
+			if(type==0 && evo_points>20){
+				segments[x+width,y+height] = (GameObject)Instantiate(body,
 				                                                     new Vector2(x+this.transform.position.x,
-				            y+this.transform.position.y), 
+				            													 y+this.transform.position.y), 
 				                                                     Quaternion.Euler(new Vector3(0,0,rot+transform.rotation.eulerAngles.z)));
 				segments[x+width, y+height].transform.parent=this.transform;
 				segments[x+width, y+height].GetComponent<Segment>().creature = this;
 				segments[x+width, y+height].GetComponent<SpriteRenderer> ().color = playerColor;
 				segments[x+width, y+height].transform.localPosition= new Vector2(x,y);
+				areaSetPlace(x+width,y+height,true);
 				setPlace (x+width,y+height,false);
-				evo_points-=20;
+				weight += 1;
+				tot_health += 2;
+				evo_points -= 10;
 			}
-			// place body
-			else if(type==2 && evo_points>10){
-				segments[x+width,y+height] = (GameObject)Instantiate(body,
+			// place mouth
+			else if(type==1 && evo_points>10 && checkRot (x+width, y+height,rot)){
+				segments[x+width,y+height] = (GameObject)Instantiate(mouth,
 				                                        new Vector2(x+this.transform.position.x,
 				            										y+this.transform.position.y), 
 				                                                     Quaternion.Euler(new Vector3(0,0,transform.rotation.eulerAngles.z)));
@@ -208,13 +212,33 @@ public class Creature : MonoBehaviour {
 				segments[x+width, y+height].GetComponent<Segment>().creature = this;
 				segments[x+width, y+height].GetComponent<SpriteRenderer> ().color = playerColor;
 				segments[x+width, y+height].transform.localPosition= new Vector2(x,y);
-				areaSetPlace(x+width,y+height,true);
 				setPlace (x+width,y+height,false);
-				tot_health+=2;
-				evo_points-=10;
+				weight += 1;
+				evo_points -= 20;
+			}
+			// place legs
+			else if(type==2 && evo_points>12 && checkRot (x+width, y+height,rot)){
+				segments[x+width,y+height] = (GameObject)Instantiate(leg,
+				                                                     new Vector2(x+this.transform.position.x,
+				            													 y+this.transform.position.y), 
+				                                                     Quaternion.Euler(new Vector3(0,0,rot+transform.rotation.eulerAngles.z)));
+				segments[x+width, y+height].transform.parent=this.transform;
+				segments[x+width, y+height].GetComponent<Segment>().creature = this;
+
+				segments[x+width, y+height].GetComponent<SpriteRenderer> ().color = playerColor;
+				segments[x+width, y+height].transform.localPosition= new Vector2(x,y);
+				setPlace (x+width,y+height,false);
+				weight += 1;
+				evo_points -= 12;
+				if(rot==0 || rot  == 180){
+					tot_rot_speed+=1;
+				}
+				else{
+					tot_speed+=1;
+				}
 			}
 			// place spike
-			else if(type==3 && evo_points>12 && checkRot (x+width, y+height,rot)){
+			else if(type==3 && evo_points>10 && checkRot (x+width, y+height,rot)){
 				segments[x+width,y+height] = (GameObject)Instantiate(spike,
 				                                                     new Vector2(x+this.transform.position.x,
 				            													 y+this.transform.position.y), 
@@ -223,25 +247,8 @@ public class Creature : MonoBehaviour {
 				segments[x+width, y+height].GetComponent<Segment>().creature = this;
 				segments[x+width, y+height].transform.localPosition= new Vector2(x,y);
 				setPlace (x+width,y+height,false);
-				evo_points-=12;
-			}
-			else if(type==4 && evo_points>10 && checkRot (x+width, y+height,rot)){
-				segments[x+width,y+height] = (GameObject)Instantiate(leg,
-				                                                     new Vector2(x+this.transform.position.x,
-				            													 y+this.transform.position.y), 
-				                                                     Quaternion.Euler(new Vector3(0,0,rot+transform.rotation.eulerAngles.z)));
-				segments[x+width, y+height].transform.parent=this.transform;
-				segments[x+width, y+height].GetComponent<Segment>().creature = this;
-				segments[x+width, y+height].GetComponent<SpriteRenderer> ().color = playerColor;
-				segments[x+width, y+height].transform.localPosition= new Vector2(x,y);
-				setPlace (x+width,y+height,false);
-				evo_points-=10;
-				if(rot==0 || rot  == 180){
-					tot_rot_speed+=1;
-				}
-				else{
-					tot_speed+=1;
-				}
+				weight += 1;
+				evo_points -= 15;
 			}
 		}
 	}
@@ -249,7 +256,8 @@ public class Creature : MonoBehaviour {
 	public void RemoveSegment(int x, int y){
 		if (segments [x + width, y + height] != null) {
 			if (segments [x + width, y + height].transform.tag == "Mouth") {
-				evo_points+=20;
+				weight -= 1;
+				evo_points += 20;
 				Destroy (segments [x + width, y + height]);
 				segments[x+width,y+height]=null;
 				setPlace (x + width, y + height, checkNeighbors (x + width, y + height));
@@ -267,8 +275,9 @@ public class Creature : MonoBehaviour {
 				}
 			}
 			else if (segments [x + width, y + height].transform.tag == "Body") {
-				tot_health-=2;
-				evo_points+=10;
+				weight -= 1;
+				tot_health -= 2;
+				evo_points += 10;
 				Destroy (segments [x + width, y + height]);
 				segments[x+width,y+height]=null;
 				setPlace (x + width, y + height, checkNeighbors (x + width, y + height));
@@ -286,7 +295,8 @@ public class Creature : MonoBehaviour {
 				}
 			}
 			else if (segments [x + width, y + height].transform.tag == "Spike") {
-				evo_points+=12;
+				weight -= 1;
+				evo_points += 12;
 				Destroy (segments [x + width, y + height]);
 				segments[x+width,y+height]=null;
 				setPlace (x + width, y + height, checkNeighbors (x + width, y + height));
@@ -304,7 +314,8 @@ public class Creature : MonoBehaviour {
 				}
 			}
 			else if (segments [x + width, y + height].transform.tag == "Leg") {
-				evo_points+=10;
+				weight -= 1;
+				evo_points += 10;
 				Destroy (segments [x + width, y + height]);
 				segments[x+width,y+height]=null;
 				setPlace (x + width, y + height, checkNeighbors (x + width, y + height));
