@@ -77,7 +77,7 @@ public class Player : Creature {
 			Redraw ();
 		} 
 		else if (Input.GetMouseButtonDown (1) && build) {
-			Vector3 mouse = Camera.main.WorldToScreenPoint (this.transform.position);
+			Vector3 mouse=Camera.main.ScreenToWorldPoint(Input.mousePosition)-transform.position;
 			float x = mouse.x;
 			float y = mouse.y;
 			float temp_rot = Mathf.PI * transform.rotation.eulerAngles.z / 180;
