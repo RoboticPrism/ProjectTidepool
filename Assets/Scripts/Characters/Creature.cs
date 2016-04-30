@@ -30,13 +30,14 @@ public class Creature : MonoBehaviour {
 	protected float speed = 0;
 	protected float rot_speed = 0;
 	protected float energy = 0;
-	protected float tot_speed = 0;
-	protected float tot_rot_speed = 0;
+	public float tot_speed = 0;
+	public float tot_rot_speed = 0;
 	protected float tot_energy = 0;
-	protected int weight = 1;
+	public int weight = 1;
 	public int exp = 0;
 	protected bool dead = false;
-
+	protected int damageTimer = 0;
+	protected int healTimer = 0;
 
 	//Creature parts
 	//public int number_mouth;
@@ -45,6 +46,7 @@ public class Creature : MonoBehaviour {
 	//public int number_leg;
 
 	public int evo_points;
+	public int evo_level;
 	// Use this for initialization
 	protected void Start () {
 		segments = new GameObject[height*2+1,width*2+1];
@@ -58,10 +60,24 @@ public class Creature : MonoBehaviour {
 		segments [height, width].GetComponent<SpriteRenderer> ().color = playerColor;
 		areaSetPlace (height, width, true);
 	}
-	
+
+	public void Update(){
+
+	}
+
 	// Update is called once per frame
-	protected void Update () {
-		
+	protected void FixedUpdate () {
+		if (damageTimer > 0) {
+			damageTimer -= 1;
+		} else if (health < tot_health) {
+			damageTimer = 0;
+			if (healTimer > 0) {
+				healTimer -= 1;
+			} else {
+				health += 1;
+				healTimer = 30;
+			}
+		}
 	}
 
 
@@ -382,6 +398,7 @@ public class Creature : MonoBehaviour {
 
 	public void TakeDamage(int damage){
 		health -= damage;
+		damageTimer = 720;
 		if(health<=0){
 			dead = true;
 			Die ();

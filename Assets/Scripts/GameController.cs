@@ -28,11 +28,22 @@ public class GameController : MonoBehaviour {
 	public Button legButton;
 	public Button spikeButton;
 
-	// evo point display
+	// stat displays
 	public Text evoPoints;
+	public Text hpPoints;
+	public Text speedPoints;
+	public Text rSpeedPoints;
+	public Text weightPoints;
 
 	// build warning
 	public Text buildWarning;
+
+	// health bar
+	public RectTransform healthBar;
+
+	// injured image
+	public Image injured;
+	public int injuredCount = 120;
 
 	// build cost
 	public Text bodyPrice;
@@ -79,10 +90,29 @@ public class GameController : MonoBehaviour {
 		}
 
 		evoPoints.GetComponent<Text> ().text = player.evo_points.ToString();
-		mouthPrice.GetComponent<Text>().text = "20";
-		bodyPrice.GetComponent<Text>().text = "10";
-		legPrice.GetComponent<Text>().text = "12";
-		spikePrice.GetComponent<Text>().text = "15";
+		bodyPrice.GetComponent<Text>().text = player.bodyPrice.ToString();
+		mouthPrice.GetComponent<Text>().text = player.mouthPrice.ToString();
+		legPrice.GetComponent<Text>().text = player.legPrice.ToString();
+		spikePrice.GetComponent<Text>().text = player.spikePrice.ToString();
+		hpPoints.text = player.tot_health.ToString();
+		speedPoints.text = player.tot_speed.ToString();
+		rSpeedPoints.text = player.tot_rot_speed.ToString();
+		weightPoints.text = player.weight.ToString();
+		healthBar.anchorMax = new Vector2 ((float)player.health / (float)player.tot_health, 1);
+	}
+
+	void FixedUpdate (){
+		if (((float)player.health / (float)player.tot_health) < .2) {
+			injured.gameObject.SetActive (true);
+			if (injuredCount <= 0) {
+				injuredCount = 120;
+			} else {
+				injuredCount -= 1;
+			}
+			injured.color = new Color (1, 1, 1, (float)injuredCount/240f );
+		} else {
+			injured.gameObject.SetActive (false);
+		}
 	}
 
 	////////////////////

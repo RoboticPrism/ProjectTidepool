@@ -11,6 +11,10 @@ public class Player : Creature {
 	public bool build = true;
 	bool canbuild =true;
 	private int warningTimer=0;
+	public int bodyPrice = 10;
+	public int mouthPrice = 20;
+	public int legPrice = 8;
+	public int spikePrice = 12;
 
 	// Use this for initialization
 	void Start () {
@@ -86,6 +90,7 @@ public class Player : Creature {
 	}
 
 	void FixedUpdate(){
+		base.FixedUpdate ();
 		removeText ();
 	}
 
