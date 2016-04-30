@@ -8,6 +8,9 @@ public class EnemySpawner : MonoBehaviour {
 	public GameObject enemyL3;
 	public GameObject enemyL4;
 	public GameObject enemyL5;
+	public int rangeMin=30;
+	public int rangeMax=60;
+	public int maxEnemies = 15;
 	Vector3 loc = new Vector3(0,0,0);
 	// Use this for initialization
 	void Start () {
@@ -16,7 +19,7 @@ public class EnemySpawner : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (GameObject.FindGameObjectsWithTag ("Enemy").Length < 15) {
+		if (GameObject.FindGameObjectsWithTag ("Enemy").Length < maxEnemies) {
 			CreateEnemy();
 		}
 		if (player != null) {
@@ -26,7 +29,7 @@ public class EnemySpawner : MonoBehaviour {
 
 	void CreateEnemy(){
 		int r = Random.Range (0, 360);
-		int d = Random.Range (30,60);
+		int d = Random.Range (rangeMin, rangeMax);
 		int p = Random.Range (0, 10);
 		bool act = true;
 		if (player != null) {

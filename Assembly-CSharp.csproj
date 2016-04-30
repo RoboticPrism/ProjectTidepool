@@ -52,6 +52,7 @@
      <Compile Include="Assets\Scripts\Effect_Sprite.cs" />
      <Compile Include="Assets\Scripts\EnemySpawner.cs" />
      <Compile Include="Assets\Scripts\GameController.cs" />
+     <Compile Include="Assets\Scripts\InfoMouseover.cs" />
      <Compile Include="Assets\Scripts\MousePlacer.cs" />
      <Compile Include="Assets\Scripts\Segments\Body.cs" />
      <Compile Include="Assets\Scripts\Segments\Core.cs" />
@@ -59,6 +60,7 @@
      <Compile Include="Assets\Scripts\Segments\Mouth.cs" />
      <Compile Include="Assets\Scripts\Segments\Segment.cs" />
      <Compile Include="Assets\Scripts\Segments\Spike.cs" />
+     <Compile Include="Assets\Scripts\TitleController.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

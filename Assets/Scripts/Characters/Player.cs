@@ -66,7 +66,6 @@ public class Player : Creature {
 		if (Input.GetMouseButtonDown (0) && build) {
 			//objects point on the screen
 			Vector3 mouse=Camera.main.ScreenToWorldPoint(Input.mousePosition)-transform.position;
-
 			float x = mouse.x;
 			float y = mouse.y;
 			float temp_rot = Mathf.PI * transform.rotation.eulerAngles.z / 180;
@@ -78,9 +77,14 @@ public class Player : Creature {
 			Redraw ();
 		} 
 		else if (Input.GetMouseButtonDown (1) && build) {
-			Vector3 obj = Camera.main.WorldToScreenPoint (this.transform.position);
-			RemoveSegment ((Mathf.RoundToInt ((Input.mousePosition.x - obj.x) / size)), 
-				(Mathf.RoundToInt ((Input.mousePosition.y - obj.y) / size)));
+			Vector3 mouse = Camera.main.WorldToScreenPoint (this.transform.position);
+			float x = mouse.x;
+			float y = mouse.y;
+			float temp_rot = Mathf.PI * transform.rotation.eulerAngles.z / 180;
+			RemoveSegment (
+				Mathf.RoundToInt (x * Mathf.Cos(temp_rot) + y * Mathf.Sin(temp_rot)), 
+				Mathf.RoundToInt (-x * Mathf.Sin(temp_rot) + y * Mathf.Cos(temp_rot))
+			);
 			Redraw ();
 		}
 
