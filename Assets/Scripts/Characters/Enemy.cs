@@ -66,7 +66,7 @@ public class Enemy : Creature {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 		base.Update ();
 		target = GameObject.FindGameObjectWithTag ("Player");
 		foreach (GameObject g in GameObject.FindGameObjectsWithTag("Enemy")) {
@@ -140,26 +140,26 @@ public class Enemy : Creature {
 
 	void AddPart(int x, int y, int type, int rot){
 		if (type == 1) {
-			segments[height+y,width+x] = (GameObject)Instantiate(mouth, 
+			segments[max_height+y,max_width+x] = (GameObject)Instantiate(mouth, 
 			                                                   this.transform.position+new Vector3(x,y,0), 
 			                                                   Quaternion.Euler(new Vector3(0,0,rot)));
 		} else if (type == 2) {
-			segments[height+y,width+x] = (GameObject)Instantiate(body, 
+			segments[max_height + y, max_width + x] = (GameObject)Instantiate(body, 
 			                                                     this.transform.position+new Vector3(x,y,0), 
 			                                                     Quaternion.Euler(new Vector3(0,0,0)));
 		} else if (type == 3) {
-			segments[height+y,width+x] = (GameObject)Instantiate(spike, 
+			segments[max_height + y, max_width + x] = (GameObject)Instantiate(spike, 
 			                                                     this.transform.position+new Vector3(x,y,0), 
 			                                                     Quaternion.Euler(new Vector3(0,0,rot)));
 		} else if (type == 4){
-			segments[height+y,width+x] = (GameObject)Instantiate(leg, 
+			segments[max_height + y, max_width + x] = (GameObject)Instantiate(leg, 
 			                                                     this.transform.position+new Vector3(x,y,0), 
 			                                                     Quaternion.Euler(new Vector3(0,0,rot)));
 		}
-		segments [height+y, width+x].transform.parent = transform;
-		segments [height+y, width+x].GetComponent<Segment>().creature = this;
+		segments [max_height + y, max_width + x].transform.parent = transform;
+		segments [max_height + y, max_width + x].GetComponent<Segment>().creature = this;
 		if (type != 3) {
-			segments [height+y, width+x].GetComponent<SpriteRenderer> ().color = playerColor;
+			segments [max_height + y, max_width + x].GetComponent<SpriteRenderer> ().color = playerColor;
 		}
 	}
 

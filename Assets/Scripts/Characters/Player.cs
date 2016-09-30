@@ -19,9 +19,6 @@ public class Player : Creature {
 	// Use this for initialization
 	void Start () {
 		base.Start ();
-		//number_body = 15;
-		//number_spike = 15;
-		//number_leg = 15;
 		size = 32;
 		Redraw ();
 		tot_speed = 1;
@@ -101,21 +98,17 @@ public class Player : Creature {
 
 
 	void CreateBuildObjects(){
-		for(int i = 0; i < width*2+1; i++){
-			for(int j = 0; j < height*2+1; j++){
+		for(int i = max_width - width; i < max_width*2+1 - (max_width - width); i++){
+			for(int j = max_height - height; j < max_height*2+1 - (max_height - height); j++){
 				//Debug.Log (""+i+" "+j+" "+placeable[i,j]);
 				if (placeable [i, j]) {
 					GameObject vs = (GameObject)Instantiate (gameController.placeable, new Vector3 (0, 0, 0), Quaternion.Euler (new Vector3 (0, 0, transform.rotation.eulerAngles.z)));
 					vs.transform.parent = this.transform;
-					vs.transform.localPosition = new Vector3 (i - width//+this.transform.localPosition.x
-						, j - height//+this.transform.localPosition.y
-						, 0);
+					vs.transform.localPosition = new Vector3 (i - max_width, j - max_height, 0);
 				} else {
 					GameObject vs = (GameObject)Instantiate (gameController.gridCell, new Vector3 (0, 0, 0), Quaternion.Euler (new Vector3 (0, 0, transform.rotation.eulerAngles.z)));
 					vs.transform.parent = this.transform;
-					vs.transform.localPosition = new Vector3 (i - width//+this.transform.localPosition.x
-						, j - height//+this.transform.localPosition.y
-						, 0);
+					vs.transform.localPosition = new Vector3 (i - max_width, j - max_height, 0);
 				}
 			}
 		}
