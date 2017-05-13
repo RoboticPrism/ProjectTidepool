@@ -5,7 +5,7 @@ public class Enemy : Creature {
 	public GameObject target;
 	public bool active=false;
 	// Use this for initialization
-	void Start () {
+	new void Start () {
 		base.Start ();
 		int r = Random.Range (0, 3);
 		if (level == 1) {
@@ -66,7 +66,7 @@ public class Enemy : Creature {
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
+	new void FixedUpdate () {
 		base.Update ();
 		target = GameObject.FindGameObjectWithTag ("Player");
 		foreach (GameObject g in GameObject.FindGameObjectsWithTag("Enemy")) {

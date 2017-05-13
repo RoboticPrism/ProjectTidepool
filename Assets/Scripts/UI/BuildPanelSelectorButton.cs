@@ -1,0 +1,39 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class BuildPanelSelectorButton : MonoBehaviour {
+
+    private GameController gameController;
+    private Player player;
+    private BuildPanelSelector buildPanelSelector;
+    public bool useColor = true;
+    public Sprite image;
+    public Button buttonObject;
+    public BuildPanelSelector.categories category;
+
+    // Use this for initialization
+    void Start () {
+        gameController = FindObjectOfType<GameController>();
+        player = FindObjectOfType<Player>();
+        buildPanelSelector = FindObjectOfType<BuildPanelSelector>();
+        setImage(image);
+        buttonObject.onClick.AddListener(() => buildPanelSelector.ShowPanel(category));
+    }
+	
+	// Update is called once per frame
+	void Update () {
+		
+	}
+
+    public void setImage(Sprite newImage)
+    {
+        image = newImage;
+        buttonObject.image.sprite = newImage;
+        if (useColor)
+        {
+            buttonObject.image.color = player.playerColor;
+        }
+    }
+}

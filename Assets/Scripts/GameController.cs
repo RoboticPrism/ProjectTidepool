@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour {
 	// Key objects
 	public Player player;
 	public MousePlacer mousePlacer;
+
 	// canvas objects
 	public Canvas buildCanvas;
 	public Canvas playCanvas;
@@ -61,21 +62,12 @@ public class GameController : MonoBehaviour {
 
 	// game stats
 	public bool build = false;
-	int warningTimer = 0;
 
 	// Use this for initialization
 	void Start () {
 		mousePlacer.sprite = segmentSprites[0];
 		previewImage.color = player.playerColor;
-		bodyButton.targetGraphic.color = player.playerColor;
-		mouthButton.targetGraphic.color = player.playerColor;
-		legButton.targetGraphic.color = player.playerColor;
 
-		// add segment button listeners
-		bodyButton.onClick.AddListener(() => setSegment(segmentTypes.BODY));
-		mouthButton.onClick.AddListener(() => setSegment(segmentTypes.MOUTH));
-		legButton.onClick.AddListener(() => setSegment(segmentTypes.LEG));
-		spikeButton.onClick.AddListener(() => setSegment(segmentTypes.SPIKE));
 		// add direction button listeners
 		upButton.onClick.AddListener(() => setDirection(directionTypes.UP));
 		downButton.onClick.AddListener(() => setDirection(directionTypes.DOWN));
@@ -88,12 +80,6 @@ public class GameController : MonoBehaviour {
 		if (Input.GetButtonDown("ToggleBuild")) {
 			build=!build;
 		}
-
-		evoPoints.GetComponent<Text> ().text = player.evo_points.ToString();
-		bodyPrice.GetComponent<Text>().text = player.bodyPrice.ToString();
-		mouthPrice.GetComponent<Text>().text = player.mouthPrice.ToString();
-		legPrice.GetComponent<Text>().text = player.legPrice.ToString();
-		spikePrice.GetComponent<Text>().text = player.spikePrice.ToString();
 		hpPoints.text = player.tot_health.ToString();
 		speedPoints.text = player.tot_speed.ToString();
 		rSpeedPoints.text = player.tot_rot_speed.ToString();

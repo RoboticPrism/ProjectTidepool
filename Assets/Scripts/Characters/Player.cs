@@ -17,7 +17,7 @@ public class Player : Creature {
 	public int spikePrice = 12;
 
 	// Use this for initialization
-	void Start () {
+	new void Start () {
 		base.Start ();
 		size = 32;
 		Redraw ();
@@ -27,7 +27,7 @@ public class Player : Creature {
 	}
 
 	// Update is called once per frame
-	void Update () {
+	new void Update () {
 		base.Update ();
 		if (!build) {
 			rot_speed += Input.GetAxis ("Horizontal");
@@ -90,7 +90,7 @@ public class Player : Creature {
 		}
 	}
 
-	void FixedUpdate(){
+	new void FixedUpdate(){
 		base.FixedUpdate ();
 		removeText ();
 	}
