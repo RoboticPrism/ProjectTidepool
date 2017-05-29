@@ -23,12 +23,6 @@ public class GameController : MonoBehaviour {
 	public Button leftButton;
 	public Button rightButton;
 
-	// build buttons
-	public Button bodyButton;
-	public Button mouthButton;
-	public Button legButton;
-	public Button spikeButton;
-
 	// stat displays
 	public Text evoPoints;
 	public Text hpPoints;
@@ -46,16 +40,7 @@ public class GameController : MonoBehaviour {
 	public Image injured;
 	public int injuredCount = 120;
 
-	// build cost
-	public Text bodyPrice;
-	public Text mouthPrice;
-	public Text legPrice;
-	public Text spikePrice;
-
 	// segment variables
-	public enum segmentTypes{BODY, MOUTH, LEG, SPIKE};
-	public segmentTypes selectedType = segmentTypes.BODY;
-	public List<Sprite> segmentSprites;
 	public enum directionTypes{UP, DOWN, LEFT, RIGHT};
 	public int[] directionValues = new int[4]{0,180,90,270};
 	public directionTypes selectedDir = directionTypes.UP;
@@ -65,7 +50,8 @@ public class GameController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		mousePlacer.sprite = segmentSprites[0];
+		mousePlacer.sprite = player.selectedSegment.sprite;
+        mousePlacer.color = player.playerColor;
 		previewImage.color = player.playerColor;
 
 		// add direction button listeners
@@ -106,22 +92,21 @@ public class GameController : MonoBehaviour {
 	////////////////////
 
 	// select a segment, set the sprite for mouse placer and preview image
-	public void setSegment(segmentTypes s){
-		selectedType = s;
-		player.type = (int)s;
-		mousePlacer.sprite = segmentSprites [(int)s];
-		previewImage.sprite = segmentSprites [(int)s];
-		if (s == segmentTypes.SPIKE) {
-			previewImage.color = new Color(255,255,255);
-			mousePlacer.color = new Color(255,255,255);
+	public void setSegment(Segment segment){
+		player.selectedSegment = segment;
+		mousePlacer.sprite = player.selectedSegment.sprite;
+		previewImage.sprite = player.selectedSegment.sprite;
+		if (segment.useColor) {
+            previewImage.color = player.playerColor;
+            mousePlacer.color = player.playerColor;
 		} else {
-			previewImage.color = player.playerColor;
-			mousePlacer.color = player.playerColor;
-		}
+            previewImage.color = new Color(255, 255, 255);
+            mousePlacer.color = new Color(255, 255, 255);
+        }
 	}
 	public void setDirection(directionTypes d){
 		selectedDir = d;
 		player.rot = directionValues [(int)d];
-		previewImage.gameObject.transform.rotation = Quaternion.Euler (0, 0, directionValues [(int)d]);
+		previewImage.gameObject.transform.localEulerAngles = new Vector3(0, 0, directionValues [(int)d]);
 	}
 }

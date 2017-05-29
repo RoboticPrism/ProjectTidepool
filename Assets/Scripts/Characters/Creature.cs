@@ -7,10 +7,6 @@ public class Creature : MonoBehaviour {
 
 	//Segment Prefabs
 	public GameObject core;
-	public GameObject mouth; //type 1
-	public GameObject body; //type 0
-	public GameObject spike; //type 3
-	public GameObject leg; //type 2
 	public int level;
 
 	public Sprite CoreDead;
@@ -41,14 +37,9 @@ public class Creature : MonoBehaviour {
 	protected int damageTimer = 0;
 	protected int healTimer = 0;
 
-	//Creature parts
-	//public int number_mouth;
-	//public int number_body;
-	//public int number_spike;
-	//public int number_leg;
-
 	public int evo_points;
 	public int evo_level;
+
 	// Use this for initialization
 	protected void Start () {
 		segments = new GameObject[max_height*2+1,max_width*2+1];
@@ -127,6 +118,7 @@ public class Creature : MonoBehaviour {
 	}
 
 	//checks a space to see if it has any supporting neighbors, if not, destroy it
+    // TODO: Make this actually work
 	bool checkNeighbors(int x, int y){
 		if (segments [x, y] == null) {
 			if (boundsCheck (x, y - 1)) {
@@ -202,11 +194,11 @@ public class Creature : MonoBehaviour {
 
 
 	//Adds a new segment to a location (if possible) and adjusts the placeable chart, returns true if a new item was made
-	public void AddSegment(int x, int y, int rot, int type){
+	public void AddSegment(int x, int y, int rot, Segment segment){
 		if(checkPlace(x+max_width,y+max_height)){
-			// place body
-			if(type==0 && evo_points>20){
-				segments[x + max_width, y + max_height] = (GameObject)Instantiate(body,
+			if(segment && evo_points > segment.pointCost && (segment.multidirectional || checkRot(x + max_width, y + max_height, rot)))
+            {
+				segments[x + max_width, y + max_height] = (GameObject)Instantiate(segment.gameObject,
 				                                                     new Vector2(x+this.transform.position.x,
 				            													 y+this.transform.position.y), 
 				                                                     Quaternion.Euler(new Vector3(0,0,rot+transform.rotation.eulerAngles.z)));
@@ -214,140 +206,40 @@ public class Creature : MonoBehaviour {
 				segments[x + max_width, y + max_height].GetComponent<Segment>().creature = this;
 				segments[x + max_width, y + max_height].GetComponent<SpriteRenderer> ().color = playerColor;
 				segments[x + max_width, y + max_height].transform.localPosition= new Vector2(x,y);
-				areaSetPlace(x + max_width, y + max_height,true);
+                if (segment.multidirectional)
+                {
+                    areaSetPlace(x + max_width, y + max_height, true);
+                }
 				setPlace (x + max_width, y + max_height,false);
-				weight += 1;
-				tot_health += 2;
-				evo_points -= 10;
-			}
-			// place mouth
-			else if(type==1 && evo_points>10 && checkRot (x + max_width, y + max_height, rot)){
-				segments[x + max_width, y + max_height] = (GameObject)Instantiate(mouth,
-				                                        new Vector2(x+this.transform.position.x,
-				            										y+this.transform.position.y), 
-				                                                     Quaternion.Euler(new Vector3(0,0,rot+transform.rotation.eulerAngles.z)));
-				segments[x + max_width, y + max_height].transform.parent=this.transform;
-				segments[x + max_width, y + max_height].GetComponent<Segment>().creature = this;
-				segments[x + max_width, y + max_height].GetComponent<SpriteRenderer> ().color = playerColor;
-				segments[x + max_width, y + max_height].transform.localPosition= new Vector2(x,y);
-				setPlace (x + max_width, y + max_height, false);
-				weight += 1;
-				evo_points -= 20;
-			}
-			// place legs
-			else if(type==2 && evo_points>12 && checkRot (x + max_width, y + max_height, rot)){
-				segments[x + max_width, y + max_height] = (GameObject)Instantiate(leg,
-				                                                     new Vector2(x+this.transform.position.x,
-				            													 y+this.transform.position.y), 
-				                                                     Quaternion.Euler(new Vector3(0,0,rot+transform.rotation.eulerAngles.z)));
-				segments[x + max_width, y + max_height].transform.parent=this.transform;
-				segments[x + max_width, y + max_height].GetComponent<Segment>().creature = this;
-				segments[x + max_width, y + max_height].GetComponent<SpriteRenderer> ().color = playerColor;
-				segments[x + max_width, y + max_height].transform.localPosition= new Vector2(x,y);
-				setPlace (x + max_width, y + max_height, false);
-				weight += 1;
-				evo_points -= 12;
-				if(rot==0 || rot  == 180){
-					tot_rot_speed+=1;
-				}
-				else{
-					tot_speed+=1;
-				}
-			}
-			// place spike
-			else if(type==3 && evo_points>10 && checkRot (x + max_width, y + max_height, rot)){
-				segments[x + max_width, y + max_height] = (GameObject)Instantiate(spike,
-				                                                     new Vector2(x+this.transform.position.x,
-				            													 y+this.transform.position.y), 
-				                                                     Quaternion.Euler(new Vector3(0,0,rot+transform.rotation.eulerAngles.z)));
-				segments[x + max_width, y + max_height].transform.parent=this.transform;
-				segments[x + max_width, y + max_height].GetComponent<Segment>().creature = this;
-				segments[x + max_width, y + max_height].transform.localPosition= new Vector2(x,y);
-				setPlace (x + max_width, y + max_height, false);
-				weight += 1;
-				evo_points -= 15;
+                evo_points -= segment.pointCost;
+                tot_health += segment.healthBonus;
+                tot_speed += segment.speedBonus;
+                weight += segment.weightBonus;
 			}
 		}
 	}
 
 	public void RemoveSegment(int x, int y){
 		if (segments [x + max_width, y + max_height] != null) {
-			if (segments [x + max_width, y + max_height].transform.tag == "Mouth") {
-				weight -= 1;
-				evo_points += 20;
-				Destroy (segments [x + max_width, y + max_height]);
-				segments[x + max_width, y + max_height] =null;
-				setPlace (x + max_width, y + max_height, checkNeighbors (x + max_width, y + max_height));
-				if(boundsCheck(x + max_width, y + max_height)){
-					setPlace (x + max_width + 1, y + max_height, checkNeighbors (x + max_width + 1, y + max_height));
-				}
-				if(boundsCheck(x + max_width - 1, y + max_height)){
-					setPlace (x + max_width - 1, y + max_height, checkNeighbors (x + max_width - 1, y + max_height));
-				}
-				if(boundsCheck(x + max_width, y + max_height + 1)){
-					setPlace (x + max_width, y + max_height + 1, checkNeighbors (x + max_width, y + max_height + 1));
-				}
-				if(boundsCheck(x + max_width, y + max_height - 1)){
-					setPlace (x + max_width, y + max_height - 1, checkNeighbors (x + max_width, y + max_height - 1));
-				}
+            Segment segment = segments[x + max_width, y + max_height].GetComponent<Segment>();
+            evo_points += segment.pointCost;
+            tot_health -= segment.healthBonus;
+            tot_speed -= segment.speedBonus;
+            weight -= segment.weightBonus;
+            Destroy (segments [x + max_width, y + max_height]);
+			segments[x + max_width, y + max_height] =null;
+			setPlace (x + max_width, y + max_height, checkNeighbors (x + max_width, y + max_height));
+			if(boundsCheck(x + max_width, y + max_height)){
+				setPlace (x + max_width + 1, y + max_height, checkNeighbors (x + max_width + 1, y + max_height));
 			}
-			else if (segments [x + max_width, y + max_height].transform.tag == "Body") {
-				weight -= 1;
-				tot_health -= 2;
-				evo_points += 10;
-				Destroy (segments [x + max_width, y + max_height]);
-				segments[x + max_width, y + max_height] =null;
-				setPlace (x + max_width, y + max_height, checkNeighbors (x + max_width, y + max_height));
-				if(boundsCheck(x + max_width + 1, y + max_height)){
-					setPlace (x + max_width + 1, y + max_height, checkNeighbors (x + max_width + 1, y + max_height));
-				}
-				if(boundsCheck(x + max_width - 1, y + max_height)){
-					setPlace (x + max_width - 1, y + max_height, checkNeighbors (x + max_width - 1, y + max_height));
-				}
-				if(boundsCheck(x + max_width, y + max_height + 1)){
-					setPlace (x + max_width, y + max_height + 1, checkNeighbors (x + max_width, y + max_height + 1));
-				}
-				if(boundsCheck(x + max_width, y + max_height - 1)){
-					setPlace (x + max_width, y + max_height - 1, checkNeighbors (x + max_width, y + max_height - 1));
-				}
+			if(boundsCheck(x + max_width - 1, y + max_height)){
+				setPlace (x + max_width - 1, y + max_height, checkNeighbors (x + max_width - 1, y + max_height));
 			}
-			else if (segments [x + max_width, y + max_height].transform.tag == "Spike") {
-				weight -= 1;
-				evo_points += 12;
-				Destroy (segments [x + max_width, y + max_height]);
-				segments[x + max_width, y + max_height] =null;
-				setPlace (x + max_width, y + max_height, checkNeighbors (x + max_width, y + max_height));
-				if(boundsCheck(x + max_width + 1, y + max_height)){
-					setPlace (x + max_width + 1, y + max_height, checkNeighbors (x + max_width + 1, y + max_height));
-				}
-				if(boundsCheck(x + max_width - 1, y + max_height)){
-					setPlace (x + max_width - 1, y + max_height, checkNeighbors (x + max_width - 1, y + max_height));
-				}
-				if(boundsCheck(x + max_width, y + max_height + 1)){
-					setPlace (x + max_width, y + max_height + 1, checkNeighbors (x + max_width, y + max_height + 1));
-				}
-				if(boundsCheck(x + max_width, y + max_height - 1)){
-					setPlace (x + max_width, y + max_height - 1, checkNeighbors (x + max_width, y + max_height - 1));
-				}
+			if(boundsCheck(x + max_width, y + max_height + 1)){
+				setPlace (x + max_width, y + max_height + 1, checkNeighbors (x + max_width, y + max_height + 1));
 			}
-			else if (segments [x + max_width, y + max_height].transform.tag == "Leg") {
-				weight -= 1;
-				evo_points += 10;
-				Destroy (segments [x + max_width, y + max_height]);
-				segments[x + max_width, y + max_height] =null;
-				setPlace (x + max_width, y + max_height, checkNeighbors (x + max_width, y + max_height));
-				if(boundsCheck(x + max_width + 1, y + max_height)){
-					setPlace (x + max_width + 1, y + max_height, checkNeighbors (x + max_width + 1, y + max_height));
-				}
-				if(boundsCheck(x + max_width - 1, y + max_height)){
-					setPlace (x + max_width - 1, y + max_height, checkNeighbors (x + max_width - 1, y + max_height));
-				}
-				if(boundsCheck(x + max_width, y + max_height + 1)){
-					setPlace (x + max_width, y + max_height + 1, checkNeighbors (x + max_width, y + max_height + 1));
-				}
-				if(boundsCheck(x + max_width, y + max_height - 1)){
-					setPlace (x + max_width, y + max_height - 1, checkNeighbors (x + max_width, y + max_height - 1));
-				}
+			if(boundsCheck(x + max_width, y + max_height - 1)){
+				setPlace (x + max_width, y + max_height - 1, checkNeighbors (x + max_width, y + max_height - 1));
 			}
 		}
 	}

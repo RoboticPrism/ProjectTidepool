@@ -4,8 +4,14 @@ using System.Collections;
 public class Enemy : Creature {
 	public GameObject target;
 	public bool active=false;
-	// Use this for initialization
-	new void Start () {
+
+    public Segment corePrefab;
+    public Segment bodyPrefab;
+    public Segment mouthPrefab;
+    public Segment legsPrefab;
+    public Segment spikePrefab;
+    // Use this for initialization
+    new void Start () {
 		base.Start ();
 		int r = Random.Range (0, 3);
 		if (level == 1) {
@@ -138,27 +144,19 @@ public class Enemy : Creature {
 		}
 	}
 
-	void AddPart(int x, int y, int type, int rot){
-		if (type == 1) {
-			segments[max_height+y,max_width+x] = (GameObject)Instantiate(mouth, 
+	void AddPart(int x, int y, int rot, Segment segment){
+		if (segment.multidirectional) {
+			segments[max_height+y,max_width+x] = (GameObject)Instantiate(segment.gameObject, 
 			                                                   this.transform.position+new Vector3(x,y,0), 
-			                                                   Quaternion.Euler(new Vector3(0,0,rot)));
-		} else if (type == 2) {
-			segments[max_height + y, max_width + x] = (GameObject)Instantiate(body, 
-			                                                     this.transform.position+new Vector3(x,y,0), 
-			                                                     Quaternion.Euler(new Vector3(0,0,0)));
-		} else if (type == 3) {
-			segments[max_height + y, max_width + x] = (GameObject)Instantiate(spike, 
-			                                                     this.transform.position+new Vector3(x,y,0), 
-			                                                     Quaternion.Euler(new Vector3(0,0,rot)));
-		} else if (type == 4){
-			segments[max_height + y, max_width + x] = (GameObject)Instantiate(leg, 
+			                                                   Quaternion.Euler(new Vector3(0,0,0)));
+		} else {
+			segments[max_height + y, max_width + x] = (GameObject)Instantiate(segment.gameObject, 
 			                                                     this.transform.position+new Vector3(x,y,0), 
 			                                                     Quaternion.Euler(new Vector3(0,0,rot)));
 		}
 		segments [max_height + y, max_width + x].transform.parent = transform;
 		segments [max_height + y, max_width + x].GetComponent<Segment>().creature = this;
-		if (type != 3) {
+		if (segment.useColor) {
 			segments [max_height + y, max_width + x].GetComponent<SpriteRenderer> ().color = playerColor;
 		}
 	}
@@ -187,142 +185,32 @@ public class Enemy : Creature {
 	}
 
 	void Config1(){
-		AddPart (1, 0, 2, 0);
-		AddPart (-1, 0, 2, 0);
-		AddPart (0, 1, 1, 0);
-		AddPart (2, 0, 4, 270);
-		AddPart (-2, 0, 4, 90);
-		AddPart (1, -1, 4, 180);
-		AddPart (-1, -1, 4, 180);
+		AddPart (1, 0, 0, corePrefab);
 	}
 	void Config2(){
-		AddPart (0, 1, 2, 0);
-		AddPart (0, 2, 1, 0);
-		AddPart (0, -1, 2, 0);
-		AddPart (1, 0, 4, 270);
-		AddPart (-1, 0, 4, 90);
-		AddPart (0, -2, 4, 180);
-	}
+        AddPart(1, 0, 0, corePrefab);
+    }
 	void Config3(){
-		AddPart (1, 0, 2, 0);
-		AddPart (-1, 0, 2, 0);
-		AddPart (0, -1, 2, 0);
-		AddPart (0, 1, 1, 0);
-		AddPart (2, 0, 4, 270);
-		AddPart (-2, 0, 4, 90);
-		AddPart (0, -2, 4, 180);
-	}
+        AddPart(1, 0, 0, corePrefab);
+    }
 	//level 2 configs
 	void Config4(){
-		AddPart (0, 1, 2, 0);
-		AddPart (0, -1, 2, 0);
-		AddPart (0, 2, 1, 0);
-		AddPart (1, 1, 4, 270);
-		AddPart (-1, 1, 4, 90);
-		AddPart (1, -1, 3, 270);
-		AddPart (-1, -1, 3, 90);
-		AddPart (0, -2, 3, 180);
-	}
+        AddPart(1, 0, 0, corePrefab);
+    }
 	void Config5(){
-		AddPart (0, 1, 2, 0);
-		AddPart (0, -1, 2, 0);
-		AddPart (1, 1, 2, 0);
-		AddPart (-1, 1, 2, 0);
-		AddPart (0, 2, 1, 0);
-		AddPart (2, 1, 3, 270);
-		AddPart (-2, 1, 3, 90);
-		AddPart (1, -1, 4, 270);
-		AddPart (-1, -1, 4, 90);
-		AddPart (0, -2, 4, 180);
-	}
+        AddPart(1, 0, 0, corePrefab);
+    }
 	void Config6(){
-		AddPart (0, 1, 2, 0);
-		AddPart (0, -1, 2, 0);
-		AddPart (1, -1, 2, 0);
-		AddPart (-1, -1, 2, 0);
-		AddPart (0, 2, 1, 0);
-		AddPart (2, -1, 4, 270);
-		AddPart (-2, -1, 4, 90);
-		AddPart (1, -2, 4, 180);
-		AddPart (-1, -2, 4, 180);
-		AddPart (1, 1, 3, 270);
-		AddPart (-1, 1, 3, 90);
-		AddPart (0, -2, 3, 180);
-	}
+        AddPart(1, 0, 0, corePrefab);
+    }
 	void Config7(){
-		AddPart (0, 1, 2, 0);
-		AddPart (0, -1, 2, 0);
-		AddPart (1, 1, 2, 0);
-		AddPart (1, 0, 2, 0);
-		AddPart (1, -1, 2, 0);
-		AddPart (-1, 1, 2, 0);
-		AddPart (-1, 0, 2, 0);
-		AddPart (-1, -1, 2, 0);
-		AddPart (0, 2, 1, 0);
-		AddPart (1, 2, 3, 0);
-		AddPart (-1, 2, 3, 0);
-		AddPart (-2, 1, 3, 90);
-		AddPart (2, 1, 3, 270);
-		AddPart (2, -1, 4, 270);
-		AddPart (-2, -1, 4, 90);
-		AddPart (1, -2, 4, 180);
-		AddPart (-1, -2, 4, 180);
-		AddPart (0, -2, 3, 180);
+        AddPart(1, 0, 0, corePrefab);
 
-	}
+    }
 	void Config8(){
-		AddPart (0, 2, 1, 0);
-		AddPart (0, 1, 2, 0);
-		AddPart (0, -1, 2, 0);
-		AddPart (1, -2, 2, 0);
-		AddPart (0, -2, 2, 0);
-		AddPart (-1, -2, 2, 0);
-		AddPart (2, -2, 2, 0);
-		AddPart (-2, -2, 2, 0);
-		AddPart (2, -1, 2, 0);
-		AddPart (-2, -1, 2, 0);
-
-		AddPart (2, 0, 3, 0);
-		AddPart (-2, 0, 3, 0);
-		AddPart (3, -1, 3, 270);
-		AddPart (-3, -1, 3, 90);
-		AddPart (2, -3, 3, 180);
-		AddPart (-2, -3, 3, 180);
-
-		AddPart (1, -1, 4, 0);
-		AddPart (-1, -1, 4, 0);
-		AddPart (3, -2, 4, 270);
-		AddPart (-3, -2, 4, 90);
-		AddPart (1, -3, 4, 180);
-		AddPart (0, -3, 4, 180);
-		AddPart (-1, -3, 4, 180);
-	}
+        AddPart(1, 0, 0, corePrefab);
+    }
 	void Config9(){
-		AddPart (0, 1, 1, 0);
-
-		AddPart (1, 0, 2, 0);
-		AddPart (-1, 0, 2, 0);
-		AddPart (2, 0, 2, 0);
-		AddPart (-2, 0, 2, 0);
-		AddPart (2, 1, 2, 0);
-		AddPart (-2, 1, 2, 0);
-		AddPart (2, -1, 2, 0);
-		AddPart (-2, -1, 2, 0);
-
-		AddPart (2, 2, 3, 0);
-		AddPart (-2, 2, 3, 0);
-		AddPart (2, -2, 3, 180);
-		AddPart (-2, -2, 3, 180);
-		AddPart (3, 1, 3, 270);
-		AddPart (-3, 1, 3, 90);
-		AddPart (3, -1, 3, 270);
-		AddPart (-3, -1, 3, 90);
-
-		AddPart (3, 0, 4, 270);
-		AddPart (-3, 0, 4, 90);
-		AddPart (1, 1, 4, 0);
-		AddPart (-1, 1, 4, 0);
-		AddPart (1, -1, 4, 180);
-		AddPart (-1, -1, 4, 180);
-	}
+        AddPart(1, 0, 0, corePrefab);
+    }
 }

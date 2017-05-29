@@ -21,7 +21,6 @@ public class BuildPanelSelector : MonoBehaviour {
     // Sets the given panel category to show and hides the rest
     public void ShowPanel(categories newCategory)
     {
-        Debug.Log(buildPanels.Count);
         foreach (BuildPanel panel in buildPanels)
         {
             panel.gameObject.SetActive(panel.category == newCategory);

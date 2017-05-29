@@ -1,8 +1,14 @@
 fileFormatVersion: 2
 guid: 2834fa7371e396045a4c7775ee1ae77b
+timeCreated: 1496083654
+licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - creature: {instanceID: 0}
+  - sprite: {fileID: 21300000, guid: 854fe8496de96d04c8f7c7284d8859cf, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,10 +1,12 @@
 fileFormatVersion: 2
 guid: 99f7aab89e1e72846a63bb58b3f7f8f3
-timeCreated: 1428349799
+timeCreated: 1496083683
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - creature: {instanceID: 0}
+  - sprite: {fileID: 21300000, guid: f337b7a04743a7244913520ae1f8649a, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

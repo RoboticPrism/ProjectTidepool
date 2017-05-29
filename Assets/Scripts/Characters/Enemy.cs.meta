@@ -1,10 +1,18 @@
 fileFormatVersion: 2
 guid: 8ab68cb0da25fa348a1049a2da484241
-timeCreated: 1427914516
+timeCreated: 1496085986
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - core: {instanceID: 0}
+  - CoreDead: {fileID: 21300000, guid: 31b7078d565a9c3498adad5c20407015, type: 3}
+  - target: {instanceID: 0}
+  - corePrefab: {fileID: 11499886, guid: c0e5bcb8595dfa945b326080d6901894, type: 2}
+  - bodyPrefab: {fileID: 11477460, guid: a4ae2bc5ceaa44948a23db6647e22dd7, type: 2}
+  - mouthPrefab: {fileID: 11474932, guid: 22c88d1de1c97104bbad44f471ca7c6a, type: 2}
+  - legsPrefab: {fileID: 11496186, guid: 74304671eeb1c3b46829c566ea654937, type: 2}
+  - spikePrefab: {fileID: 11447854, guid: 133e08723aa80ea49bfe36a944b65310, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
