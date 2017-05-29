@@ -6,15 +6,11 @@ public class Player : Creature {
 
 	public GameController gameController;
 	private int size = 0;
-	public int type = 0;
+	public Segment selectedSegment;
 	public int rot = 0;
 	public bool build = true;
 	bool canbuild =true;
 	private int warningTimer=0;
-	public int bodyPrice = 10;
-	public int mouthPrice = 20;
-	public int legPrice = 8;
-	public int spikePrice = 12;
 
 	// Use this for initialization
 	new void Start () {
@@ -70,7 +66,7 @@ public class Player : Creature {
 				Mathf.RoundToInt (x * Mathf.Cos(temp_rot) + y * Mathf.Sin(temp_rot)), 
 				Mathf.RoundToInt (-x * Mathf.Sin(temp_rot) + y * Mathf.Cos(temp_rot)),
 				rot,
-				type);
+				selectedSegment);
 			Redraw ();
 		} 
 		else if (Input.GetMouseButtonDown (1) && build) {
