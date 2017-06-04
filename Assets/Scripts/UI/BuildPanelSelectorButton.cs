@@ -11,7 +11,7 @@ public class BuildPanelSelectorButton : MonoBehaviour {
     public bool useColor = true;
     public Sprite image;
     public Button buttonObject;
-    public BuildPanelSelector.categories category;
+    public BuildPanel buildPanel;
 
     // Use this for initialization
     void Start () {
@@ -19,7 +19,7 @@ public class BuildPanelSelectorButton : MonoBehaviour {
         player = FindObjectOfType<Player>();
         buildPanelSelector = FindObjectOfType<BuildPanelSelector>();
         setImage(image);
-        buttonObject.onClick.AddListener(() => buildPanelSelector.ShowPanel(category));
+        buttonObject.onClick.AddListener(() => buildPanelSelector.ShowPanel(this));
     }
 	
 	// Update is called once per frame

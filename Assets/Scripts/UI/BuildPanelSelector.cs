@@ -5,12 +5,13 @@ using UnityEngine.UI;
 
 public class BuildPanelSelector : MonoBehaviour {
 
-    public enum categories  {MAIN, ATTACK, DEFENSE, MOVEMENT}
-    public List<BuildPanel> buildPanels = new List<BuildPanel>();
+    public BuildPanelSelectorButton mainPanelButton;
+    List<BuildPanelSelectorButton> buildPanelSelectorButtons;
 
 	// Use this for initialization
 	void Start () {
-        ShowPanel(categories.MAIN);
+        buildPanelSelectorButtons = new List<BuildPanelSelectorButton>(FindObjectsOfType<BuildPanelSelectorButton>());
+        ShowPanel(mainPanelButton);
 	}
 	
 	// Update is called once per frame
@@ -19,11 +20,11 @@ public class BuildPanelSelector : MonoBehaviour {
 	}
 
     // Sets the given panel category to show and hides the rest
-    public void ShowPanel(categories newCategory)
+    public void ShowPanel(BuildPanelSelectorButton selectedBuildPanelSelectorButton)
     {
-        foreach (BuildPanel panel in buildPanels)
+        foreach (BuildPanelSelectorButton buildPanelSelectorButton in buildPanelSelectorButtons)
         {
-            panel.gameObject.SetActive(panel.category == newCategory);
+            buildPanelSelectorButton.buildPanel.gameObject.SetActive(buildPanelSelectorButton == selectedBuildPanelSelectorButton);
         }
     }
 }
