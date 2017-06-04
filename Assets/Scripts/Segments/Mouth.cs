@@ -55,18 +55,7 @@ public class Mouth : Segment {
 				}
 			}
 			else if (col.collider.gameObject.GetComponent<Segment> ().creature == null) {
-				if(col.collider.gameObject.tag=="Core"){
-					creature.evo_points+=10;
-				}
-				else if(col.collider.gameObject.tag=="Body"){
-					creature.evo_points+=7;
-				}
-				else if(col.collider.gameObject.tag=="Spike"){
-					creature.evo_points+=5;
-				}
-				else if(col.collider.gameObject.tag=="Leg"){
-					creature.evo_points+=5;
-				}
+				creature.UpdateEvoPoints(creature.evoPoints + (int)Mathf.Floor(col.collider.gameObject.GetComponent<Segment>().pointCost/2));
 				Destroy (col.collider.gameObject);
 			}
 		}

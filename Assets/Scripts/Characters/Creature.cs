@@ -37,8 +37,8 @@ public class Creature : MonoBehaviour {
 	protected int damageTimer = 0;
 	protected int healTimer = 0;
 
-	public int evo_points;
-	public int evo_level;
+	public int evoLevel;
+    public int evoPoints;
 
 	// Use this for initialization
 	protected void Start () {
@@ -55,7 +55,7 @@ public class Creature : MonoBehaviour {
 	}
 
 	public void Update(){
-
+        
 	}
 
 	// Update is called once per frame
@@ -73,6 +73,10 @@ public class Creature : MonoBehaviour {
 		}
 	}
 
+    public virtual void UpdateEvoPoints(int newEvoPoints)
+    {
+        evoPoints = newEvoPoints;
+    }
 
 	//checks if a location is within bounds
 	bool boundsCheck(int x, int y){
@@ -196,7 +200,7 @@ public class Creature : MonoBehaviour {
 	//Adds a new segment to a location (if possible) and adjusts the placeable chart, returns true if a new item was made
 	public void AddSegment(int x, int y, int rot, Segment segment){
 		if(checkPlace(x+max_width,y+max_height)){
-			if(segment && evo_points > segment.pointCost && (segment.multidirectional || checkRot(x + max_width, y + max_height, rot)))
+			if(segment && evoPoints > segment.pointCost && (segment.multidirectional || checkRot(x + max_width, y + max_height, rot)))
             {
 				segments[x + max_width, y + max_height] = (GameObject)Instantiate(segment.gameObject,
 				                                                     new Vector2(x+this.transform.position.x,
@@ -204,14 +208,17 @@ public class Creature : MonoBehaviour {
 				                                                     Quaternion.Euler(new Vector3(0,0,rot+transform.rotation.eulerAngles.z)));
 				segments[x + max_width, y + max_height].transform.parent=this.transform;
 				segments[x + max_width, y + max_height].GetComponent<Segment>().creature = this;
-				segments[x + max_width, y + max_height].GetComponent<SpriteRenderer> ().color = playerColor;
+                if (segment.useColor)
+                {
+                    segments[x + max_width, y + max_height].GetComponent<SpriteRenderer>().color = playerColor;
+                }
 				segments[x + max_width, y + max_height].transform.localPosition= new Vector2(x,y);
                 if (segment.multidirectional)
                 {
                     areaSetPlace(x + max_width, y + max_height, true);
                 }
 				setPlace (x + max_width, y + max_height,false);
-                evo_points -= segment.pointCost;
+                UpdateEvoPoints(evoPoints - segment.pointCost);
                 tot_health += segment.healthBonus;
                 tot_speed += segment.speedBonus;
                 weight += segment.weightBonus;
@@ -222,7 +229,7 @@ public class Creature : MonoBehaviour {
 	public void RemoveSegment(int x, int y){
 		if (segments [x + max_width, y + max_height] != null) {
             Segment segment = segments[x + max_width, y + max_height].GetComponent<Segment>();
-            evo_points += segment.pointCost;
+            UpdateEvoPoints(evoPoints + segment.pointCost);
             tot_health -= segment.healthBonus;
             tot_speed -= segment.speedBonus;
             weight -= segment.weightBonus;

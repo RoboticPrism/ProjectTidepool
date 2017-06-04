@@ -136,10 +136,10 @@ public class Enemy : Creature {
 			rot_speed=0;
 			GetComponent<Rigidbody2D>().velocity=new Vector2(0,0);
 		}
-		if (evo_points > 30 && level == 1) {
+		if (evoPoints > 30 && level == 1) {
 			Upgrade();
 		}
-		if (evo_points > 100 && level == 2) {
+		if (evoPoints > 100 && level == 2) {
 			Upgrade();
 		}
 	}

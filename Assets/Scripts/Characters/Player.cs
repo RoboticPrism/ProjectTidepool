@@ -11,6 +11,7 @@ public class Player : Creature {
 	public bool build = true;
 	bool canbuild =true;
 	private int warningTimer=0;
+    public Text evoPointsText;
 
 	// Use this for initialization
 	new void Start () {
@@ -20,6 +21,7 @@ public class Player : Creature {
 		tot_speed = 1;
 		tot_rot_speed = 1;
 		tot_energy = 1;
+        UpdateEvoPoints(evoPoints);
 	}
 
 	// Update is called once per frame
@@ -91,7 +93,11 @@ public class Player : Creature {
 		removeText ();
 	}
 
-
+    public override void UpdateEvoPoints(int newEvoPoints)
+    {
+        base.UpdateEvoPoints(newEvoPoints);
+        evoPointsText.text = newEvoPoints.ToString();
+    }
 
 	void CreateBuildObjects(){
 		for(int i = max_width - width; i < max_width*2+1 - (max_width - width); i++){
