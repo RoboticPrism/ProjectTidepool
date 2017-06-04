@@ -12,4 +12,5 @@ public abstract class Segment : MonoBehaviour{
     public int weightBonus;
     public bool useColor;
     public bool multidirectional;
+    public bool attachedToCore = true;
 }

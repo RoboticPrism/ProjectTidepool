@@ -41,8 +41,11 @@ public class Creature : MonoBehaviour {
 	public int evoLevel;
     public int evoPoints;
 
-	// Use this for initialization
-	protected void Start () {
+    // used by orphaned piece checker
+    List<Segment> checkedSegments;
+
+    // Use this for initialization
+    protected void Start () {
 		segments = new Segment[max_height*2+1,max_width*2+1];
 		placeable = new bool[max_height*2+1,max_width*2+1];
 		//Create Core
@@ -105,7 +108,6 @@ public class Creature : MonoBehaviour {
             return placeable[(int)arrayUnits.x, (int)arrayUnits.y];
         } else
         {
-            Debug.Log(buildUnits);
             return false;
         }
     }
@@ -117,9 +119,6 @@ public class Creature : MonoBehaviour {
         {
             Vector2 arrayUnits = BuildToArrayUnits(buildUnits);
             placeable[(int)arrayUnits.x, (int)arrayUnits.y] = newValue;
-        } else
-        {
-            Debug.Log(buildUnits);
         }
     }
 
@@ -132,7 +131,6 @@ public class Creature : MonoBehaviour {
             return segments[(int)arrayUnits.x, (int)arrayUnits.y];
         } else
         {
-            Debug.Log(buildUnits);
             return null;
         }
     }
@@ -144,9 +142,6 @@ public class Creature : MonoBehaviour {
         {
             Vector2 arrayUnits = BuildToArrayUnits(buildUnits);
             segments[(int)arrayUnits.x, (int)arrayUnits.y] = newSegment;
-        } else
-        {
-            Debug.Log(buildUnits);
         }
     }
 
@@ -307,9 +302,17 @@ public class Creature : MonoBehaviour {
 		}
 	}
 
-    // removes a segment at a location (if possible), updates placeable chart, and updates stats
+    // removes a segment at a location (if possible), updates placeable chart, and updates stats, runs orphaned piece check
 	public void RemoveSegment(Vector2 buildUnits){
-		if (GetSegmentAt(buildUnits) != null) {
+        RemoveSegmentWithoutChecks(buildUnits);
+        CheckForOrphanedPieces();
+	}
+
+    // remove segment but without the orphaned piece check, for use with orphaned piece check cleanup
+    void RemoveSegmentWithoutChecks(Vector2 buildUnits)
+    {
+        if (GetSegmentAt(buildUnits) != null)
+        {
             Segment segment = GetSegmentAt(buildUnits);
 
             // set stats
@@ -319,12 +322,91 @@ public class Creature : MonoBehaviour {
             weight -= segment.weightBonus;
 
             // destroy gameobject
-            Destroy (GetSegmentAt(buildUnits).gameObject);
-			SetSegmentAt(buildUnits, null);
+            Destroy(GetSegmentAt(buildUnits).gameObject);
+            SetSegmentAt(buildUnits, null);
             RecalculatePlace(buildUnits);
             RecalculateNeighborPlaces(buildUnits);
-		}
-	}
+        }
+    }
+
+    //////////////////////////
+    // ORPHANED PIECE CHECK //
+    //////////////////////////
+
+    // finds and removes pieces that are no longer connected to the core
+    void CheckForOrphanedPieces()
+    {
+        checkedSegments = new List<Segment>();
+        
+        // set all peices to orphaned
+        foreach (Segment segment in segments)
+        {
+            if (segment != null)
+            {
+                segment.attachedToCore = false;
+            }
+        }
+
+        // from the core, expand outwards 
+        CheckIfOrphanedPiece(Vector2.zero);
+
+        // delete all pieces that aren't attached to the core
+        for (int x = 0; x < segments.GetLength(0); x++)
+        {
+            for (int y = 0; y < segments.GetLength(1); y++)
+            {
+                Segment currentSegment = GetSegmentAt(ArrayToBuildUnits(new Vector2(x, y)));
+                if(currentSegment != null &&
+                    !currentSegment.attachedToCore)
+                {
+                    RemoveSegmentWithoutChecks(ArrayToBuildUnits(new Vector2(x, y)));
+                }
+            }
+        }
+    }
+
+    // checks if an individual piece is attached to the core 
+    void CheckIfOrphanedPiece(Vector2 buildUnits)
+    {
+        // if segment is core, or is adjacent to an item that is attached to the core, its attached to the core
+        Segment currentSegment = GetSegmentAt(buildUnits);
+        if (currentSegment.GetComponent<Core>() != null)
+        {
+            currentSegment.attachedToCore = true;
+        } else if (
+            (GetSegmentAt(buildUnits + Vector2.up) != null && GetSegmentAt(buildUnits + Vector2.up).attachedToCore) ||
+            (GetSegmentAt(buildUnits + Vector2.down) != null && GetSegmentAt(buildUnits + Vector2.down).attachedToCore) ||
+            (GetSegmentAt(buildUnits + Vector2.left) != null && GetSegmentAt(buildUnits + Vector2.left).attachedToCore) ||
+            (GetSegmentAt(buildUnits + Vector2.right) != null && GetSegmentAt(buildUnits + Vector2.right).attachedToCore))
+        {
+            currentSegment.attachedToCore = true;
+        }
+
+        // state that we have checked this segment
+        checkedSegments.Add(currentSegment);
+
+        // check all adjacent if pieces exist there and they haven't been checked yet
+        if (GetSegmentAt(buildUnits + Vector2.up) != null &&
+            !checkedSegments.Contains(GetSegmentAt(buildUnits + Vector2.up)))
+        {
+            CheckIfOrphanedPiece(buildUnits + Vector2.up);
+        }
+        if (GetSegmentAt(buildUnits + Vector2.down) != null &&
+            !checkedSegments.Contains(GetSegmentAt(buildUnits + Vector2.down)))
+        {
+            CheckIfOrphanedPiece(buildUnits + Vector2.down);
+        }
+        if (GetSegmentAt(buildUnits + Vector2.left) != null &&
+            !checkedSegments.Contains(GetSegmentAt(buildUnits + Vector2.left)))
+        {
+            CheckIfOrphanedPiece(buildUnits + Vector2.left);
+        }
+        if (GetSegmentAt(buildUnits + Vector2.right) != null &&
+            !checkedSegments.Contains(GetSegmentAt(buildUnits + Vector2.right)))
+        {
+            CheckIfOrphanedPiece(buildUnits + Vector2.right);
+        }
+    }
 
     // returns a list of valid build spaces in build units
     public List<Vector2> ValidBuildSpaces()
