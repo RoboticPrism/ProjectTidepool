@@ -14,7 +14,7 @@ public class MousePlacer : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		Vector3 mouse=Camera.main.ScreenToWorldPoint(Input.mousePosition)-player.transform.position;
+		Vector3 mouse=Camera.main.ScreenToWorldPoint(Input.mousePosition) - player.transform.position;
 		float x = mouse.x;
 		float y = mouse.y;
 		float rot = Mathf.PI * player.transform.rotation.eulerAngles.z / 180;
@@ -23,10 +23,10 @@ public class MousePlacer : MonoBehaviour {
 			Mathf.RoundToInt (-x * Mathf.Sin(rot) + y * Mathf.Cos(rot)),
 			0);
 		this.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, player.rot));
-		if (player.build && Mathf.RoundToInt(mouse.x)<player.width+1
-			&& Mathf.RoundToInt(mouse.x)>-player.width-1
-			&&Mathf.RoundToInt(mouse.y)<player.height+1
-			&&Mathf.RoundToInt(mouse.y)>-player.height-1) {
+		if (player.build && Mathf.RoundToInt(mouse.x) < player.width + 1 &&
+            Mathf.RoundToInt(mouse.x) > -player.width - 1 &&
+            Mathf.RoundToInt(mouse.y) < player.height + 1 &&
+            Mathf.RoundToInt(mouse.y) > -player.height - 1) {
 			GetComponent<SpriteRenderer> ().color = color;
 			GetComponent<SpriteRenderer> ().sprite = sprite;
 		} else {

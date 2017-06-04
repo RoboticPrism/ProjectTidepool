@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class BuildPanelSelectorButton : MonoBehaviour {
 
-    private GameController gameController;
     private Player player;
     private BuildPanelSelector buildPanelSelector;
     public bool useColor = true;
@@ -15,7 +14,6 @@ public class BuildPanelSelectorButton : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        gameController = FindObjectOfType<GameController>();
         player = FindObjectOfType<Player>();
         buildPanelSelector = FindObjectOfType<BuildPanelSelector>();
         setImage(image);

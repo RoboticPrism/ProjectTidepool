@@ -1,74 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Enemy : Creature {
 	public GameObject target;
 	public bool active=false;
 
     public Segment corePrefab;
-    public Segment bodyPrefab;
-    public Segment mouthPrefab;
-    public Segment legsPrefab;
-    public Segment spikePrefab;
+    public List<Segment> bodyPrefabs;
+    public List<Segment> mainPrefabs;
+    public List<Segment> attackPrefabs;
+    public List<Segment> defensePrefabs;
+    public List<Segment> movementPrefabs;
+
     // Use this for initialization
     new void Start () {
 		base.Start ();
-		int r = Random.Range (0, 3);
-		if (level == 1) {
-			if (r == 0) {
-				Config1 ();
-				health = 6;
-				tot_speed = 3;
-				tot_rot_speed = 4;
-			} else if (r == 1) {
-				Config2 ();
-				health = 6;
-				tot_speed = 2;
-				tot_rot_speed = 1;
-			} else {
-				Config3();
-				health = 8;
-				tot_speed = 2;
-				tot_rot_speed = 1;
-			}
-		}
-		else if (level == 2) {
-			if (r == 0) {
-				Config4 ();
-				health = 10;
-				tot_speed = 3;
-				tot_rot_speed = 4;
-			} else if (r == 1) {
-				Config5 ();
-				health = 8;
-				tot_speed = 2;
-				tot_rot_speed = 1;
-			} else {
-				Config6();
-				health = 12;
-				tot_speed = 2;
-				tot_rot_speed = 1;
-			}
-		}
-		else if (level == 3) {
-			if (r == 0) {
-				Config7 ();
-				health = 6;
-				tot_speed = 3;
-				tot_rot_speed = 4;
-			} else if (r == 1) {
-				Config8 ();
-				health = 6;
-				tot_speed = 2;
-				tot_rot_speed = 1;
-			} else {
-				Config9();
-				health = 8;
-				tot_speed = 2;
-				tot_rot_speed = 1;
-			}
-		}
-
+        evoPoints = level * 100;
+        Generate();
 	}
 	
 	// Update is called once per frame
@@ -144,22 +93,69 @@ public class Enemy : Creature {
 		}
 	}
 
-	void AddPart(int x, int y, int rot, Segment segment){
-		if (segment.multidirectional) {
-			segments[max_height+y,max_width+x] = (GameObject)Instantiate(segment.gameObject, 
-			                                                   this.transform.position+new Vector3(x,y,0), 
-			                                                   Quaternion.Euler(new Vector3(0,0,0)));
-		} else {
-			segments[max_height + y, max_width + x] = (GameObject)Instantiate(segment.gameObject, 
-			                                                     this.transform.position+new Vector3(x,y,0), 
-			                                                     Quaternion.Euler(new Vector3(0,0,rot)));
-		}
-		segments [max_height + y, max_width + x].transform.parent = transform;
-		segments [max_height + y, max_width + x].GetComponent<Segment>().creature = this;
-		if (segment.useColor) {
-			segments [max_height + y, max_width + x].GetComponent<SpriteRenderer> ().color = playerColor;
-		}
-	}
+    // randomly builds a new enemy layout
+    void Generate()
+    {
+        GenerateBodyParts(100);
+        GenerateMainParts(100);
+    }
+
+    // generates a copy of an existing enemy layout
+    void GenerateExisting(Enemy enemy)
+    {
+
+    }
+
+    // generates the building block body segments procedurally
+    void GenerateBodyParts(int evoPointAllowance)
+    {
+        
+    }
+
+    // generates the vital parts like mouths procedurally
+    void GenerateMainParts(int evoPointAllowance)
+    {
+
+    }
+
+    // generates the attack segments procedurally
+    void GenerateAttackParts(int evoPointAllowance)
+    {
+
+    }
+
+    // generates the defense segments procedurally
+    void GenerateDefenseParts(int evoPointAllowance)
+    {
+
+    }
+
+    // generates the movement segments procedurally
+    void GenerateMovementParts(int evoPointAllowance)
+    {
+
+    }
+
+    void AddPartYSymetrical(Vector2 buildUnits, int rot, Segment segment)
+    {
+        if (buildUnits.x == 0)
+        {
+            AddSegment(buildUnits, rot, segment);
+        }
+        else
+        {
+            AddSegment(buildUnits, rot, segment);
+            int _altRot = rot;
+            if (rot == 90)
+            {
+                _altRot = 270;
+            } else if (rot == 270)
+            {
+                _altRot = 90;
+            }
+            AddSegment(buildUnits, _altRot, segment);
+        }
+    }
 
 	void Upgrade(){
 		for (int x =0; x<height*2+1; x++) {
@@ -183,34 +179,4 @@ public class Enemy : Creature {
 		}
 
 	}
-
-	void Config1(){
-		AddPart (1, 0, 0, corePrefab);
-	}
-	void Config2(){
-        AddPart(1, 0, 0, corePrefab);
-    }
-	void Config3(){
-        AddPart(1, 0, 0, corePrefab);
-    }
-	//level 2 configs
-	void Config4(){
-        AddPart(1, 0, 0, corePrefab);
-    }
-	void Config5(){
-        AddPart(1, 0, 0, corePrefab);
-    }
-	void Config6(){
-        AddPart(1, 0, 0, corePrefab);
-    }
-	void Config7(){
-        AddPart(1, 0, 0, corePrefab);
-
-    }
-	void Config8(){
-        AddPart(1, 0, 0, corePrefab);
-    }
-	void Config9(){
-        AddPart(1, 0, 0, corePrefab);
-    }
 }

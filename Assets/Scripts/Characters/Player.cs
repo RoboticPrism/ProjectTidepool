@@ -65,8 +65,9 @@ public class Player : Creature {
 			float y = mouse.y;
 			float temp_rot = Mathf.PI * transform.rotation.eulerAngles.z / 180;
 			AddSegment (
-				Mathf.RoundToInt (x * Mathf.Cos(temp_rot) + y * Mathf.Sin(temp_rot)), 
-				Mathf.RoundToInt (-x * Mathf.Sin(temp_rot) + y * Mathf.Cos(temp_rot)),
+				new Vector2(
+                    Mathf.RoundToInt (x * Mathf.Cos(temp_rot) + y * Mathf.Sin(temp_rot)), 
+                    Mathf.RoundToInt (-x * Mathf.Sin(temp_rot) + y * Mathf.Cos(temp_rot))),
 				rot,
 				selectedSegment);
 			Redraw ();
@@ -77,8 +78,9 @@ public class Player : Creature {
 			float y = mouse.y;
 			float temp_rot = Mathf.PI * transform.rotation.eulerAngles.z / 180;
 			RemoveSegment (
-				Mathf.RoundToInt (x * Mathf.Cos(temp_rot) + y * Mathf.Sin(temp_rot)), 
-				Mathf.RoundToInt (-x * Mathf.Sin(temp_rot) + y * Mathf.Cos(temp_rot))
+				new Vector2(
+                    Mathf.RoundToInt (x * Mathf.Cos(temp_rot) + y * Mathf.Sin(temp_rot)), 
+				    Mathf.RoundToInt (-x * Mathf.Sin(temp_rot) + y * Mathf.Cos(temp_rot)))
 			);
 			Redraw ();
 		}
@@ -100,18 +102,24 @@ public class Player : Creature {
     }
 
 	void CreateBuildObjects(){
-		for(int i = max_width - width; i < max_width*2+1 - (max_width - width); i++){
-			for(int j = max_height - height; j < max_height*2+1 - (max_height - height); j++){
-				//Debug.Log (""+i+" "+j+" "+placeable[i,j]);
-				if (placeable [i, j]) {
-					GameObject vs = (GameObject)Instantiate (gameController.placeable, new Vector3 (0, 0, 0), Quaternion.Euler (new Vector3 (0, 0, transform.rotation.eulerAngles.z)));
-					vs.transform.parent = this.transform;
-					vs.transform.localPosition = new Vector3 (i - max_width, j - max_height, 0);
-				} else {
-					GameObject vs = (GameObject)Instantiate (gameController.gridCell, new Vector3 (0, 0, 0), Quaternion.Euler (new Vector3 (0, 0, transform.rotation.eulerAngles.z)));
-					vs.transform.parent = this.transform;
-					vs.transform.localPosition = new Vector3 (i - max_width, j - max_height, 0);
-				}
+		for(int i = 0; i < placeable.GetLength(0); i++){
+			for(int j = 0; j < placeable.GetLength(1); j++){
+                Vector2 buildUnits = ArrayToBuildUnits(new Vector2(i, j));
+                if (BoundsCheck(buildUnits))
+                {
+                    if (GetPlaceable(buildUnits))
+                    {
+                        GameObject vs = (GameObject)Instantiate(gameController.placeable, new Vector3(0, 0, 0), Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z)));
+                        vs.transform.parent = this.transform;
+                        vs.transform.localPosition = buildUnits;
+                    }
+                    else
+                    {
+                        GameObject vs = (GameObject)Instantiate(gameController.gridCell, new Vector3(0, 0, 0), Quaternion.Euler(new Vector3(0, 0, transform.rotation.eulerAngles.z)));
+                        vs.transform.parent = this.transform;
+                        vs.transform.localPosition = buildUnits;
+                    }
+                }
 			}
 		}
 	}
