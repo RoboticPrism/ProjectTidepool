@@ -38,21 +38,21 @@ public class Enemy : Creature {
 			}
 		}
 		if (active) {
-			speed=tot_speed;
-			rot_speed=tot_rot_speed;
+			speed=totalSpeed;
+            float totalRotationSpeed = totalSpeed * rotationRatio;
 			if(target!=null){
 			if (this.level<target.GetComponent<Creature>().level) {
 				if (target != null) {
 					Vector3 targetDir = target.transform.position - transform.position;
 					float angle = Mathf.Atan2 (targetDir.y, targetDir.x) * Mathf.Rad2Deg;
 					Quaternion q = Quaternion.AngleAxis (angle + 90, Vector3.forward);
-					transform.rotation = Quaternion.Slerp (transform.rotation, q, Time.deltaTime * rot_speed/10);
+					transform.rotation = Quaternion.Slerp (transform.rotation, q, Time.deltaTime * totalRotationSpeed/10);
 					float offset = Vector3.Distance(target.transform.position, transform.position);
 					if(offset > 50){
 						speed = 0;
 					}
 					else{
-						speed = tot_speed;
+						speed = totalSpeed;
 					}
 					transform.Translate(Vector3.up*speed/100);
 				}
@@ -63,7 +63,7 @@ public class Enemy : Creature {
 					Vector3 targetDir = target.transform.position - transform.position;
 					float angle = Mathf.Atan2 (targetDir.y, targetDir.x) * Mathf.Rad2Deg;
 					Quaternion q = Quaternion.AngleAxis (angle - 90, Vector3.forward);
-					transform.rotation = Quaternion.Slerp (transform.rotation, q, Time.deltaTime * rot_speed/10);
+					transform.rotation = Quaternion.Slerp (transform.rotation, q, Time.deltaTime * totalRotationSpeed/10);
 					float offrot = Mathf.Abs(angle-90-transform.rotation.eulerAngles.z);
 					if(offrot>180){
 						offrot=360-offrot;
@@ -73,7 +73,7 @@ public class Enemy : Creature {
 						speed = 0;
 					}
 					else{
-						speed = tot_speed*(1-offrot/90);
+						speed = totalSpeed*(1 - offrot/90);
 					}
 					transform.Translate(Vector3.up*speed/100);
 				}
@@ -82,7 +82,7 @@ public class Enemy : Creature {
 			}
 		} else {
 			speed=0;
-			rot_speed=0;
+            rotationSpeed = 0;
 			GetComponent<Rigidbody2D>().velocity=new Vector2(0,0);
 		}
 		if (evoPoints > 30 && level == 1) {

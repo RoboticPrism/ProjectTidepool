@@ -18,9 +18,8 @@ public class Player : Creature {
 		base.Start ();
 		size = 32;
 		Redraw ();
-		tot_speed = 1;
-		tot_rot_speed = 1;
-		tot_energy = 1;
+		totalSpeed = 1;
+		totalEnergy = 1;
         UpdateEvoPoints(evoPoints);
 	}
 
@@ -28,30 +27,30 @@ public class Player : Creature {
 	new void Update () {
 		base.Update ();
 		if (!build) {
-			rot_speed += Input.GetAxis ("Horizontal");
+			rotationSpeed += Input.GetAxis ("Horizontal");
 			speed += Input.GetAxis ("Vertical");
-			if (speed > tot_speed) {
-				speed = tot_speed;
+			if (speed > totalSpeed) {
+				speed = totalSpeed;
 			}
-			if (speed < -tot_speed) {
-				speed = -tot_speed;
+			if (speed < -totalSpeed) {
+				speed = -totalSpeed;
 			}
-			if (rot_speed > tot_rot_speed) {
-				rot_speed = tot_rot_speed;
+			if (rotationSpeed > totalSpeed * rotationRatio) {
+                rotationSpeed = totalSpeed * rotationRatio;
 			}
-			if (rot_speed < -tot_rot_speed) {
-				rot_speed = -tot_rot_speed;
+			if (rotationSpeed < -totalSpeed * rotationRatio) {
+                rotationSpeed = -totalSpeed * rotationRatio;
 			}
 
 			GetComponent<Rigidbody2D> ().velocity = transform.up*speed;
 
-			transform.rotation=Quaternion.Euler(0,0, transform.rotation.eulerAngles.z-rot_speed/10);
+			transform.rotation=Quaternion.Euler(0,0, transform.rotation.eulerAngles.z- rotationSpeed / 10);
 
 			if (Input.GetAxis ("Vertical") == 0) {
 				speed *= .5f;
 			}
 			if (Input.GetAxis ("Horizontal") == 0) {
-				rot_speed *= .5f;
+                rotationSpeed *= .5f;
 			}
 		} 
 		else {

@@ -64,15 +64,14 @@ public class GameController : MonoBehaviour {
 		if (Input.GetButtonDown("ToggleBuild")) {
 			build=!build;
 		}
-		hpPoints.text = player.tot_health.ToString();
-		speedPoints.text = player.tot_speed.ToString();
-		rSpeedPoints.text = player.tot_rot_speed.ToString();
+		hpPoints.text = player.totalHealth.ToString();
+		speedPoints.text = player.totalSpeed.ToString();
 		weightPoints.text = player.weight.ToString();
-		healthBar.anchorMax = new Vector2 ((float)player.health / (float)player.tot_health, 1);
+		healthBar.anchorMax = new Vector2 ((float)player.health / (float)player.totalHealth, 1);
 	}
 
 	void FixedUpdate (){
-		if (((float)player.health / (float)player.tot_health) < .2) {
+		if (((float)player.health / (float)player.totalHealth) < .2) {
 			injured.gameObject.SetActive (true);
 			if (injuredCount <= 0) {
 				injuredCount = 120;

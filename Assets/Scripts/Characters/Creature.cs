@@ -25,13 +25,13 @@ public class Creature : MonoBehaviour {
 
 	//Player stats
 	public int health = 10;
-	public int tot_health = 10;
+	public int totalHealth = 10;
 	protected float speed = 0;
-	protected float rot_speed = 0;
-	protected float energy = 0;
-	public float tot_speed = 0;
-	public float tot_rot_speed = 0;
-	protected float tot_energy = 0;
+    protected float rotationSpeed = 0;
+    public float totalSpeed = 0;
+    public float rotationRatio = 0.5f;
+    protected float energy = 0;
+    protected float totalEnergy = 0;
 	public int weight = 1;
 	public int exp = 0;
 	protected bool dead = false;
@@ -69,7 +69,7 @@ public class Creature : MonoBehaviour {
 	protected void FixedUpdate () {
 		if (damageTimer > 0) {
 			damageTimer -= 1;
-		} else if (health < tot_health) {
+		} else if (health < totalHealth) {
 			damageTimer = 0;
 			if (healTimer > 0) {
 				healTimer -= 1;
@@ -353,8 +353,8 @@ public class Creature : MonoBehaviour {
 
                 // set stats
                 UpdateEvoPoints(evoPoints - segment.pointCost);
-                tot_health += segment.healthBonus;
-                tot_speed += segment.speedBonus;
+                totalHealth += segment.healthBonus;
+                totalSpeed += segment.speedBonus;
                 weight += segment.weightBonus;
 			}
 		}
@@ -398,8 +398,8 @@ public class Creature : MonoBehaviour {
 
             // set stats
             UpdateEvoPoints(evoPoints + segment.pointCost);
-            tot_health -= segment.healthBonus;
-            tot_speed -= segment.speedBonus;
+            totalHealth -= segment.healthBonus;
+            totalSpeed -= segment.speedBonus;
             weight -= segment.weightBonus;
 
             // destroy gameobject
