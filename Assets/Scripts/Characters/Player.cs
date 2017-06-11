@@ -7,7 +7,7 @@ public class Player : Creature {
 	public GameController gameController;
 	private int size = 0;
 	public Segment selectedSegment;
-	public int rot = 0;
+	public rotations buildRotation = rotations.UP;
 	public bool build = true;
 	bool canbuild =true;
 	private int warningTimer=0;
@@ -68,7 +68,7 @@ public class Player : Creature {
 				new Vector2(
                     Mathf.RoundToInt (x * Mathf.Cos(temp_rot) + y * Mathf.Sin(temp_rot)), 
                     Mathf.RoundToInt (-x * Mathf.Sin(temp_rot) + y * Mathf.Cos(temp_rot))),
-				rot,
+				buildRotation,
 				selectedSegment);
 			Redraw ();
 		} 

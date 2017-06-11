@@ -41,9 +41,7 @@ public class GameController : MonoBehaviour {
 	public int injuredCount = 120;
 
 	// segment variables
-	public enum directionTypes{UP, DOWN, LEFT, RIGHT};
-	public int[] directionValues = new int[4]{0,180,90,270};
-	public directionTypes selectedDir = directionTypes.UP;
+	public Creature.rotations selectedRotation = Creature.rotations.UP;
 
 	// game stats
 	public bool build = false;
@@ -55,10 +53,10 @@ public class GameController : MonoBehaviour {
 		previewImage.color = player.playerColor;
 
 		// add direction button listeners
-		upButton.onClick.AddListener(() => setDirection(directionTypes.UP));
-		downButton.onClick.AddListener(() => setDirection(directionTypes.DOWN));
-		leftButton.onClick.AddListener(() => setDirection(directionTypes.LEFT));
-		rightButton.onClick.AddListener(() => setDirection(directionTypes.RIGHT));
+		upButton.onClick.AddListener(() => setDirection(Creature.rotations.UP));
+		downButton.onClick.AddListener(() => setDirection(Creature.rotations.DOWN));
+		leftButton.onClick.AddListener(() => setDirection(Creature.rotations.LEFT));
+		rightButton.onClick.AddListener(() => setDirection(Creature.rotations.RIGHT));
 	}
 
 	// Update is called once per frame
@@ -104,9 +102,8 @@ public class GameController : MonoBehaviour {
             mousePlacer.color = new Color(255, 255, 255);
         }
 	}
-	public void setDirection(directionTypes d){
-		selectedDir = d;
-		player.rot = directionValues [(int)d];
-		previewImage.gameObject.transform.localEulerAngles = new Vector3(0, 0, directionValues [(int)d]);
+	public void setDirection(Creature.rotations currentRotation){
+        player.buildRotation = currentRotation;
+		previewImage.gameObject.transform.localEulerAngles = new Vector3(0, 0, Creature.RotationToInt(currentRotation));
 	}
 }

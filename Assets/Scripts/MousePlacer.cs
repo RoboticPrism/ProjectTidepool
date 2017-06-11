@@ -22,7 +22,7 @@ public class MousePlacer : MonoBehaviour {
 			Mathf.RoundToInt (x * Mathf.Cos(rot) + y * Mathf.Sin(rot)),
 			Mathf.RoundToInt (-x * Mathf.Sin(rot) + y * Mathf.Cos(rot)),
 			0);
-		this.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, player.rot));
+		this.transform.localRotation = Quaternion.Euler (new Vector3 (0, 0, Creature.RotationToInt(player.buildRotation)));
 		if (player.build && Mathf.RoundToInt(mouse.x) < player.width + 1 &&
             Mathf.RoundToInt(mouse.x) > -player.width - 1 &&
             Mathf.RoundToInt(mouse.y) < player.height + 1 &&

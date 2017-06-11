@@ -7,6 +7,7 @@ public class Enemy : Creature {
 	public bool active=false;
 
     public Segment corePrefab;
+    public Segment mouthPrefab;
     public List<Segment> bodyPrefabs;
     public List<Segment> mainPrefabs;
     public List<Segment> attackPrefabs;
@@ -16,7 +17,6 @@ public class Enemy : Creature {
     // Use this for initialization
     new void Start () {
 		base.Start ();
-        evoPoints = level * 100;
         Generate();
 	}
 	
@@ -96,8 +96,13 @@ public class Enemy : Creature {
     // randomly builds a new enemy layout
     void Generate()
     {
-        GenerateBodyParts(100);
-        GenerateMainParts(100);
+        int totalEvoPoints = evoPoints;
+        GenerateParts((int)(totalEvoPoints * 0.3f), bodyPrefabs);
+        // Manually generate a mouth on the front, otherwise stuff gets... weird...
+        GenerateMouth();
+        GenerateParts((int)(totalEvoPoints * 0.1f), mainPrefabs);
+        GenerateParts((int)(totalEvoPoints * 0.3f), attackPrefabs);
+        GenerateParts((int)(totalEvoPoints * 0.3f), movementPrefabs);
     }
 
     // generates a copy of an existing enemy layout
@@ -106,77 +111,60 @@ public class Enemy : Creature {
 
     }
 
-    // generates the building block body segments procedurally
-    void GenerateBodyParts(int evoPointAllowance)
-    {
-        
-    }
-
-    // generates the vital parts like mouths procedurally
-    void GenerateMainParts(int evoPointAllowance)
-    {
-
-    }
-
-    // generates the attack segments procedurally
-    void GenerateAttackParts(int evoPointAllowance)
-    {
-
-    }
-
-    // generates the defense segments procedurally
-    void GenerateDefenseParts(int evoPointAllowance)
-    {
-
-    }
-
-    // generates the movement segments procedurally
-    void GenerateMovementParts(int evoPointAllowance)
-    {
-
-    }
-
-    void AddPartYSymetrical(Vector2 buildUnits, int rot, Segment segment)
-    {
-        if (buildUnits.x == 0)
+    // special generation to make sure a mouth always generates
+    void GenerateMouth() {
+        foreach (Vector2 validBuildSpace in ValidBuildSpaces())
         {
-            AddSegment(buildUnits, rot, segment);
-        }
-        else
-        {
-            AddSegment(buildUnits, rot, segment);
-            int _altRot = rot;
-            if (rot == 90)
-            {
-                _altRot = 270;
-            } else if (rot == 270)
-            {
-                _altRot = 90;
+            if (validBuildSpace.x == 0 && CheckRot(validBuildSpace, rotations.UP)) {
+                AddSegment(validBuildSpace, rotations.UP, mouthPrefab);
+                break;
             }
-            AddSegment(buildUnits, _altRot, segment);
         }
     }
+
+    // randomly adds the given parts within the budget
+    void GenerateParts(int evoPointAllowance, List<Segment> segments)
+    {
+        List<Vector2>validBuildSpaces = ValidBuildSpaces();
+        int maxTries = 10;
+        while(evoPointAllowance > 0 && validBuildSpaces.Count > 0 && segments.Count > 0 && maxTries > 0)
+        {
+            // Get our random values together
+            Segment randomSegment = segments[Random.Range(0, segments.Count - 1)];
+            Vector2 randomBuildSpace = validBuildSpaces[Random.Range(0, validBuildSpaces.Count - 1)];
+            rotations randomRotation = 0;
+            if (!randomSegment.multidirectional)
+            {
+                List<rotations> validRotations = ValidRotations(randomBuildSpace, randomSegment);
+                if (validRotations.Count > 0)
+                {
+                    randomRotation = validRotations[Random.Range(0, validRotations.Count - 1)];
+                }
+            }
+
+            // See if we are building two items or one and make sure we can afford it
+            if ((randomBuildSpace.x == 0 && evoPointAllowance > randomSegment.pointCost) ||
+                (randomBuildSpace.x != 0 && evoPointAllowance > randomSegment.pointCost * 2))
+            {
+                AddSegmentYSymetrical(randomBuildSpace,
+                    randomRotation,
+                    randomSegment);
+                if (randomBuildSpace.x == 0)
+                {
+                    evoPointAllowance -= randomSegment.pointCost;
+                } else
+                {
+                    evoPointAllowance -= (randomSegment.pointCost * 2);
+                }
+                validBuildSpaces = ValidBuildSpaces();
+            }
+            maxTries--;
+        }
+    }
+
+    
 
 	void Upgrade(){
-		for (int x =0; x<height*2+1; x++) {
-			for (int y =0; y<width*2+1; y++){
-				if(segments[x,y]!=null){
-					Destroy (segments[x,y]);
-					segments[x,y]=null;
-				}
-			}
-		}
-		if (level < 3) {
-			level++;
-			if(level==2){
-				playerColor = new Color32(239,242,21,255);
-			}
-			else if(level==3){
-				playerColor = new Color32(242,62,21,255);
-			}
-			this.Start();
-			active=true;
-		}
 
 	}
 }
