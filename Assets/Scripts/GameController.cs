@@ -16,6 +16,10 @@ public class GameController : MonoBehaviour {
 	public GameObject gridCell;
 	public GameObject placeable;
 
+    // egg objects
+    public GameObject eggPrefab;
+    public GameObject brokenEggPrefab;
+
 	// rotation device components
 	public Image previewImage;
 	public Button upButton;
@@ -26,8 +30,8 @@ public class GameController : MonoBehaviour {
 	// stat displays
 	public Text evoPoints;
 	public Text hpPoints;
-	public Text speedPoints;
-	public Text rSpeedPoints;
+    public Text energyPoints;
+    public Text speedPoints;
 	public Text weightPoints;
 
 	// build warning
@@ -65,6 +69,7 @@ public class GameController : MonoBehaviour {
 			build=!build;
 		}
 		hpPoints.text = player.totalHealth.ToString();
+        energyPoints.text = player.totalEnergy.ToString();
 		speedPoints.text = player.totalSpeed.ToString();
 		weightPoints.text = player.weight.ToString();
 		healthBar.anchorMax = new Vector2 ((float)player.health / (float)player.totalHealth, 1);
@@ -101,6 +106,7 @@ public class GameController : MonoBehaviour {
             mousePlacer.color = new Color(255, 255, 255);
         }
 	}
+
 	public void setDirection(Creature.rotations currentRotation){
         player.buildRotation = currentRotation;
 		previewImage.gameObject.transform.localEulerAngles = new Vector3(0, 0, Creature.RotationToInt(currentRotation));

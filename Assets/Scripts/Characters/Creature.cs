@@ -22,16 +22,18 @@ public class Creature : MonoBehaviour {
 	public Segment[,] segments;
 	public bool[,] placeable;
 
+    // Egg
+    public GameObject eggObject;
 
 	//Player stats
 	public int health = 10;
 	public int totalHealth = 10;
-	protected float speed = 0;
+    public float energy = 0;
+    public float totalEnergy = 0;
+    protected float speed = 0;
     protected float rotationSpeed = 0;
     public float totalSpeed = 0;
     public float rotationRatio = 0.5f;
-    protected float energy = 0;
-    protected float totalEnergy = 0;
 	public int weight = 1;
 	public int exp = 0;
 	protected bool dead = false;

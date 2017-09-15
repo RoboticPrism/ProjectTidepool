@@ -18,7 +18,7 @@ public class Mouth : Segment {
 	}
 
 	void OnCollisionStay2D(Collision2D col){
-		if (creature != null) {
+		if (creature != null && col.collider.gameObject.GetComponent<Segment>()) {
 			if (col.collider.gameObject.GetComponent<Segment>().creature != null) {
 				if (col.collider.gameObject.tag == "Core") {
 					if (col.collider.gameObject.GetComponent<Core> ().creature != creature) {

@@ -136,6 +136,8 @@ public class Player : Creature {
 				g.GetComponent<Enemy>().active=true;
 			}
 			GetComponent<Rigidbody2D> ().mass = weight;
+            Destroy(this.eggObject);
+            Instantiate(gameController.brokenEggPrefab, this.transform.position, this.transform.rotation);
 		} 
 		//turn building mode on
 		else {
@@ -158,8 +160,8 @@ public class Player : Creature {
 				gameController.buildWarning.gameObject.SetActive(true);
 				warningTimer=255;
 			}
-
-		}
+            this.eggObject = (GameObject)Instantiate(gameController.eggPrefab, this.transform.position, this.transform.rotation);
+        }
 	}
 
 	void Redraw(){
