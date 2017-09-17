@@ -11,7 +11,8 @@ public class Player : Creature {
 	public bool build = true;
 	bool canbuild =true;
 	private int warningTimer=0;
-    public Text evoPointsText;
+    public Text evoPointsBuildText;
+    public Text evoPointsPlayText;
 
 	// Use this for initialization
 	new void Start () {
@@ -97,7 +98,8 @@ public class Player : Creature {
     public override void UpdateEvoPoints(int newEvoPoints)
     {
         base.UpdateEvoPoints(newEvoPoints);
-        evoPointsText.text = newEvoPoints.ToString();
+        evoPointsBuildText.text = newEvoPoints.ToString();
+        evoPointsPlayText.text = newEvoPoints.ToString();
     }
 
 	void CreateBuildObjects(){

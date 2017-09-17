@@ -28,7 +28,6 @@ public class GameController : MonoBehaviour {
 	public Button rightButton;
 
 	// stat displays
-	public Text evoPoints;
 	public Text hpPoints;
     public Text energyPoints;
     public Text speedPoints;
