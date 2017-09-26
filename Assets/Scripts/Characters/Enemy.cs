@@ -38,7 +38,7 @@ public class Enemy : Creature {
 			}
 		}
 		if (active) {
-			speed=totalSpeed;
+			speed = totalSpeed;
             float totalRotationSpeed = totalSpeed * rotationRatio;
 			if(target!=null){
 			if (this.level<target.GetComponent<Creature>().level) {
@@ -85,12 +85,10 @@ public class Enemy : Creature {
             rotationSpeed = 0;
 			GetComponent<Rigidbody2D>().velocity=new Vector2(0,0);
 		}
-		if (evoPoints > 30 && level == 1) {
-			Upgrade();
-		}
-		if (evoPoints > 100 && level == 2) {
-			Upgrade();
-		}
+        if (evoPoints >= 100)
+        {
+            Generate();
+        }
 	}
 
     // randomly builds a new enemy layout

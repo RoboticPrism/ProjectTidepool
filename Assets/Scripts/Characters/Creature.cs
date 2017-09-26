@@ -24,6 +24,11 @@ public class Creature : MonoBehaviour {
 
     // Egg
     public GameObject eggObject;
+    public GameObject eggPrefab;
+    public GameObject brokenEggPrefab;
+    public int eggTime = 0;
+    public int eggTimeMax = 60;
+    public float eggScale = 2f;
 
 	//Player stats
 	public int health = 10;
@@ -69,7 +74,8 @@ public class Creature : MonoBehaviour {
 
 	// Update is called once per frame
 	protected void FixedUpdate () {
-		if (damageTimer > 0) {
+        // health
+        if (damageTimer > 0) {
 			damageTimer -= 1;
 		} else if (health < totalHealth) {
 			damageTimer = 0;
@@ -80,7 +86,14 @@ public class Creature : MonoBehaviour {
 				healTimer = 30;
 			}
 		}
-	}
+        // egg scaling
+        if (eggObject)
+        {
+            eggObject.transform.localScale = new Vector3(eggTime * eggScale / eggTimeMax,
+                                                         eggTime * eggScale / eggTimeMax,
+                                                         eggTime * eggScale / eggTimeMax);
+        }
+    }
 
     public virtual void UpdateEvoPoints(int newEvoPoints)
     {
@@ -512,6 +525,7 @@ public class Creature : MonoBehaviour {
 	public void TakeDamage(int damage){
 		health -= damage;
 		damageTimer = 720;
+        eggTime = 0;
 		if(health <= 0){
 			dead = true;
 			Die ();

@@ -1,8 +1,19 @@
 fileFormatVersion: 2
 guid: 983f194992c347947b37957636e9cf4d
+timeCreated: 1506355835
+licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - core: {instanceID: 0}
+  - CoreDead: {instanceID: 0}
+  - eggObject: {instanceID: 0}
+  - eggPrefab: {fileID: 1355359056977718, guid: b2cf68892cc29c343b7eb46f3429a25e,
+      type: 2}
+  - brokenEggPrefab: {fileID: 1256783362599254, guid: ac0165652adb8d64d86ff44ae7d2aead,
+      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
+  assetBundleName: 
+  assetBundleVariant: 

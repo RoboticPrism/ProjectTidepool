@@ -16,10 +16,6 @@ public class GameController : MonoBehaviour {
 	public GameObject gridCell;
 	public GameObject placeable;
 
-    // egg objects
-    public GameObject eggPrefab;
-    public GameObject brokenEggPrefab;
-
 	// rotation device components
 	public Image previewImage;
 	public Button upButton;
@@ -32,9 +28,6 @@ public class GameController : MonoBehaviour {
     public Text energyPoints;
     public Text speedPoints;
 	public Text weightPoints;
-
-	// build warning
-	public Text buildWarning;
 
 	// health bar
 	public RectTransform healthBar;

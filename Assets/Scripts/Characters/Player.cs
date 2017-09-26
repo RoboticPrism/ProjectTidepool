@@ -84,16 +84,44 @@ public class Player : Creature {
 			);
 			Redraw ();
 		}
-
-		if (Input.GetButtonDown("ToggleBuild")) {
-			SetMode ();
-		}
 	}
 
 	new void FixedUpdate(){
 		base.FixedUpdate ();
-		removeText ();
-	}
+        // increment egg size if not in build and holding build
+        if (Input.GetButton("ToggleBuild") && !build)
+        {
+            if (eggTime > 0 && !eggObject)
+            {
+                eggObject = Instantiate(eggPrefab, this.transform.position, this.transform.rotation, this.transform);
+                eggObject.transform.localScale = Vector3.zero;
+            }
+            eggTime += 1;
+            
+            if (eggTime >= eggTimeMax)
+            {
+                SetMode();
+            }
+        }
+        // decrement egg size if not holding build
+        if (!Input.GetButton("ToggleBuild") && !build)
+        {
+            if (eggTime > 0)
+            {
+                eggTime -= 1;
+            }
+            if (eggTime <= 0 && eggObject)
+            {
+                Destroy(eggObject);
+            }
+        }
+        // leave build mode
+        if (Input.GetButtonDown("ToggleBuild") && build)
+        {
+            eggTime = 0;
+            SetMode();
+        }
+    }
 
     public override void UpdateEvoPoints(int newEvoPoints)
     {
@@ -139,30 +167,17 @@ public class Player : Creature {
 			}
 			GetComponent<Rigidbody2D> ().mass = weight;
             Destroy(this.eggObject);
-            Instantiate(gameController.brokenEggPrefab, this.transform.position, this.transform.rotation);
+            Instantiate(brokenEggPrefab, this.transform.position, this.transform.rotation);
 		} 
 		//turn building mode on
 		else {
-			canbuild=true;
+			CreateBuildObjects();
+			build=true;
+			gameController.buildCanvas.gameObject.SetActive(true);
+			gameController.playCanvas.gameObject.SetActive(false);
 			foreach(GameObject g in GameObject.FindGameObjectsWithTag("Enemy")){
-				if(Vector3.Distance(g.transform.position,this.transform.position)<15){
-					canbuild=false;
-				}
+				g.GetComponent<Enemy>().active=false;
 			}
-			if(canbuild){
-				CreateBuildObjects();
-				build=true;
-				gameController.buildCanvas.gameObject.SetActive(true);
-				gameController.playCanvas.gameObject.SetActive(false);
-				foreach(GameObject g in GameObject.FindGameObjectsWithTag("Enemy")){
-					g.GetComponent<Enemy>().active=false;
-				}
-			}
-			else{
-				gameController.buildWarning.gameObject.SetActive(true);
-				warningTimer=255;
-			}
-            this.eggObject = (GameObject)Instantiate(gameController.eggPrefab, this.transform.position, this.transform.rotation);
         }
 	}
 
@@ -171,15 +186,6 @@ public class Player : Creature {
 			Destroy(g);
 		}
 		CreateBuildObjects();
-	}
-	public void removeText(){
-		if (warningTimer > 0) {
-			gameController.buildWarning.GetComponent<Text>().color=new Color(255,255,255,warningTimer);
-			warningTimer-=3;
-
-		} else {
-			gameController.buildWarning.gameObject.SetActive(false);
-		}
 	}
 
 }
