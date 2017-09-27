@@ -9,8 +9,6 @@ public class Player : Creature {
 	public Segment selectedSegment;
 	public rotations buildRotation = rotations.UP;
 	public bool build = true;
-	bool canbuild =true;
-	private int warningTimer=0;
     public Text evoPointsBuildText;
     public Text evoPointsPlayText;
 
@@ -28,6 +26,7 @@ public class Player : Creature {
 	new void Update () {
 		base.Update ();
 		if (!build) {
+            // movement
 			rotationSpeed += Input.GetAxis ("Horizontal");
 			speed += Input.GetAxis ("Vertical");
 			if (speed > totalSpeed) {
@@ -53,8 +52,24 @@ public class Player : Creature {
 			if (Input.GetAxis ("Horizontal") == 0) {
                 rotationSpeed *= .5f;
 			}
+
+            //action
+            if (Input.GetButton("Action"))
+            {
+                if (energy > 0)
+                {
+                    action = true;
+                } else
+                {
+                    action = false;
+                }
+            } else
+            {
+                action = false;
+            }
 		} 
 		else {
+            action = false;
 			GetComponent<Rigidbody2D>().velocity = new Vector2 (0,0);
 			GetComponent<Rigidbody2D>().angularVelocity = 0;
 		}

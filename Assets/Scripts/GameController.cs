@@ -29,8 +29,9 @@ public class GameController : MonoBehaviour {
     public Text speedPoints;
 	public Text weightPoints;
 
-	// health bar
+	// info bars
 	public RectTransform healthBar;
+    public RectTransform energyBar;
 
 	// injured image
 	public Image injured;
@@ -65,7 +66,8 @@ public class GameController : MonoBehaviour {
 		speedPoints.text = player.totalSpeed.ToString();
 		weightPoints.text = player.weight.ToString();
 		healthBar.anchorMax = new Vector2 ((float)player.health / (float)player.totalHealth, 1);
-	}
+        energyBar.anchorMax = new Vector2((float)player.energy / (float)player.totalEnergy, 1);
+    }
 
 	void FixedUpdate (){
 		if (((float)player.health / (float)player.totalHealth) < .2) {

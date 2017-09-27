@@ -13,4 +13,13 @@ public abstract class Segment : MonoBehaviour{
     public bool useColor;
     public bool multidirectional;
     public bool attachedToCore = true;
+    public bool edible;
+
+    public void FixedUpdate()
+    {
+        if (creature == null && !edible)
+        {
+            Destroy(this.gameObject);
+        }
+    }
 }

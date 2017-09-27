@@ -17,13 +17,15 @@ public class Enemy : Creature {
     // Use this for initialization
     new void Start () {
 		base.Start ();
+        totalEnergy = 1;
         Generate();
 	}
 	
 	// Update is called once per frame
 	new void FixedUpdate () {
-		base.Update ();
-		target = GameObject.FindGameObjectWithTag ("Player");
+		base.FixedUpdate ();
+        // find a target
+        target = GameObject.FindGameObjectWithTag ("Player");
 		foreach (GameObject g in GameObject.FindGameObjectsWithTag("Enemy")) {
 			if(g!=this.gameObject){
 				if(target==null){
@@ -37,57 +39,85 @@ public class Enemy : Creature {
 				}
 			}
 		}
-		if (active) {
-			speed = totalSpeed;
-            float totalRotationSpeed = totalSpeed * rotationRatio;
-			if(target!=null){
-			if (this.level<target.GetComponent<Creature>().level) {
-				if (target != null) {
-					Vector3 targetDir = target.transform.position - transform.position;
-					float angle = Mathf.Atan2 (targetDir.y, targetDir.x) * Mathf.Rad2Deg;
-					Quaternion q = Quaternion.AngleAxis (angle + 90, Vector3.forward);
-					transform.rotation = Quaternion.Slerp (transform.rotation, q, Time.deltaTime * totalRotationSpeed/10);
-					float offset = Vector3.Distance(target.transform.position, transform.position);
-					if(offset > 50){
-						speed = 0;
-					}
-					else{
-						speed = totalSpeed;
-					}
-					transform.Translate(Vector3.up*speed/100);
-				}
-
-				//GetComponent<Rigidbody2D> ().AddForce (this.transform.up * new Vector3 (1, 0, 0));
-			} else {
-				if (target != null) {
-					Vector3 targetDir = target.transform.position - transform.position;
-					float angle = Mathf.Atan2 (targetDir.y, targetDir.x) * Mathf.Rad2Deg;
-					Quaternion q = Quaternion.AngleAxis (angle - 90, Vector3.forward);
-					transform.rotation = Quaternion.Slerp (transform.rotation, q, Time.deltaTime * totalRotationSpeed/10);
-					float offrot = Mathf.Abs(angle-90-transform.rotation.eulerAngles.z);
-					if(offrot>180){
-						offrot=360-offrot;
-					}
-					//Debug.Log (offrot);
-					if(offrot > 90){
-						speed = 0;
-					}
-					else{
-						speed = totalSpeed*(1 - offrot/90);
-					}
-					transform.Translate(Vector3.up*speed/100);
-				}
-
-			}
-			}
-		} else {
-			speed=0;
-            rotationSpeed = 0;
-			GetComponent<Rigidbody2D>().velocity=new Vector2(0,0);
-		}
-        if (evoPoints >= 100)
+        if (active)
         {
-            Generate();
+            speed = totalSpeed;
+            float totalRotationSpeed = totalSpeed * rotationRatio;
+            if (target != null)
+            {
+                if (this.level < target.GetComponent<Creature>().level)
+                {
+                    if (target != null)
+                    {
+                        Vector3 targetDir = target.transform.position - transform.position;
+                        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+                        Quaternion q = Quaternion.AngleAxis(angle + 90, Vector3.forward);
+                        transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * totalRotationSpeed / 10);
+                        float offset = Vector3.Distance(target.transform.position, transform.position);
+                        if (offset > 50)
+                        {
+                            speed = 0;
+                        }
+                        else
+                        {
+                            speed = totalSpeed;
+                        }
+                        transform.Translate(Vector3.up * speed / 100);
+                    }
+                }
+                else
+                {
+                    if (target != null)
+                    {
+                        // movement and rotation
+                        Vector3 targetDir = target.transform.position - transform.position;
+                        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+                        Quaternion q = Quaternion.AngleAxis(angle - 90, Vector3.forward);
+                        transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * totalRotationSpeed / 10);
+                        float offrot = Mathf.Abs(angle - 90 - transform.rotation.eulerAngles.z);
+                        if (offrot > 180)
+                        {
+                            offrot = 360 - offrot;
+                        }
+                        if (offrot > 90)
+                        {
+                            speed = 0;
+                        }
+                        else
+                        {
+                            speed = totalSpeed * (1 - offrot / 90);
+                        }
+                        transform.Translate(Vector3.up * speed / 100);
+                        // action activation
+                        if (target.GetComponent<Creature>() && Vector3.Distance(this.transform.position, target.transform.position) < 5)
+                        {
+                            if (energy > 0)
+                            {
+                                action = true;
+                            }
+                            else
+                            {
+                                action = false;
+                            }
+                        }
+                        else
+                        {
+                            action = false;
+                        }
+                    }
+
+                }
+            }
+            else
+            {
+                speed = 0;
+                rotationSpeed = 0;
+                GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+            }
+            if (evoPoints >= 100)
+            {
+                Generate();
+            }
         }
 	}
 

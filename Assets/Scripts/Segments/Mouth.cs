@@ -2,66 +2,47 @@
 using System.Collections;
 
 public class Mouth : Segment {
-	private int att_cooldown = 50;
-	private int att_cooldown_max = 50;
-	public GameObject damage_effect;
+	private int attCooldown = 50;
+	private int attCooldownMax = 50;
+	public GameObject damageEffect;
 	// Use this for initialization
-	void Start () {
-	
+	void Start ()
+    {
+        
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		if (att_cooldown < att_cooldown_max) {
-			att_cooldown++;
+	new void FixedUpdate ()
+    {
+        base.FixedUpdate();
+		if (attCooldown < attCooldownMax)
+        {
+			attCooldown++;
 		}
 	}
 
-	void OnCollisionStay2D(Collision2D col){
-		if (creature != null && col.collider.gameObject.GetComponent<Segment>()) {
-			if (col.collider.gameObject.GetComponent<Segment>().creature != null) {
-				if (col.collider.gameObject.tag == "Core") {
-					if (col.collider.gameObject.GetComponent<Core> ().creature != creature) {
-						if (att_cooldown >= att_cooldown_max) {
-							col.collider.gameObject.GetComponent<Core> ().creature.TakeDamage (1);
-							mark_damage(col);
-							att_cooldown = 0;
-						}
-					}
-				} else if (col.collider.gameObject.tag == "Mouth") {
-					if (col.collider.gameObject.GetComponent<Mouth> ().creature != creature) {
-						if (att_cooldown >= att_cooldown_max) {
-							col.collider.gameObject.GetComponent<Mouth> ().creature.TakeDamage (1);
-							mark_damage(col);
-							att_cooldown = 0;
-						}
-					}
-				} else if (col.collider.gameObject.tag == "Body") {
-					if (col.collider.gameObject.GetComponent<Body> ().creature != creature) {
-						if (att_cooldown >= att_cooldown_max) {
-							col.collider.gameObject.GetComponent<Body> ().creature.TakeDamage (1);
-							mark_damage(col);
-							att_cooldown = 0;
-						}
-					}
-				} else if (col.collider.gameObject.tag == "Leg") {
-					if (col.collider.gameObject.GetComponent<Leg> ().creature != creature) {
-						if (att_cooldown >= att_cooldown_max) {
-							col.collider.gameObject.GetComponent<Leg> ().creature.TakeDamage (1);
-							mark_damage(col);
-							att_cooldown = 0;
-						}
-					}
-				}
-			}
-			else if (col.collider.gameObject.GetComponent<Segment> ().creature == null) {
-				creature.UpdateEvoPoints(creature.evoPoints + (int)Mathf.Floor(col.collider.gameObject.GetComponent<Segment>().pointCost/2));
-				Destroy (col.collider.gameObject);
-			}
-		}
+	void OnCollisionStay2D(Collision2D col)
+    {
+        Segment collidedSegment = col.collider.gameObject.GetComponent<Segment>();
+        if (creature != null && collidedSegment && collidedSegment.GetComponent<SpikeBit>() == null)
+        {
+            if (collidedSegment.creature && collidedSegment.creature != creature)
+            {
+                if (attCooldown >= attCooldownMax)
+                {
+                    collidedSegment.creature.TakeDamage(1);
+                    MarkDamage(col);
+                    attCooldown = 0;
+                }
+            }
+        }
+        else if (creature && collidedSegment.creature == null && collidedSegment.edible)
+        {
+            creature.UpdateEvoPoints(creature.evoPoints + (int)Mathf.Floor(collidedSegment.pointCost / 2));
+            Destroy(col.collider.gameObject);
+        }
 	}
-	void mark_damage(Collision2D col){
-		GameObject g = (GameObject)Instantiate(damage_effect, 
+	void MarkDamage(Collision2D col){
+		GameObject g = (GameObject)Instantiate(damageEffect, 
 		                                       col.collider.transform.position, 
 		                                       Quaternion.Euler(new Vector3(0,0,transform.rotation.eulerAngles.z+180)));
 		g.transform.parent=col.transform;

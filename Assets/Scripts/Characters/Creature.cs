@@ -45,6 +45,8 @@ public class Creature : MonoBehaviour {
 	protected int damageTimer = 0;
 	protected int healTimer = 0;
 
+    public bool action = false;
+
 	public int evoLevel;
     public int evoPoints;
 
@@ -86,6 +88,23 @@ public class Creature : MonoBehaviour {
 				healTimer = 30;
 			}
 		}
+        // energy
+        if (action)
+        {
+            energy -= 0.005f;
+            if (energy <= 0)
+            {
+                energy = 0f;
+                action = false;
+            }
+        } else if (energy < totalEnergy) {
+            energy += 0.005f;
+        }
+        if (energy > totalEnergy)
+        {
+            energy = totalEnergy;
+        }
+
         // egg scaling
         if (eggObject)
         {
