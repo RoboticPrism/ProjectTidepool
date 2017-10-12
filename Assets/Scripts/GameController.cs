@@ -16,12 +16,8 @@ public class GameController : MonoBehaviour {
 	public GameObject gridCell;
 	public GameObject placeable;
 
-	// rotation device components
-	public Image previewImage;
-	public Button upButton;
-	public Button downButton;
-	public Button leftButton;
-	public Button rightButton;
+    // rotation device components
+    public RotationPreview rotationPreview;
 
 	// stat displays
 	public Text hpPoints;
@@ -32,6 +28,7 @@ public class GameController : MonoBehaviour {
 	// info bars
 	public RectTransform healthBar;
     public RectTransform energyBar;
+    public GameObject buildReminder;
 
 	// injured image
 	public Image injured;
@@ -45,16 +42,18 @@ public class GameController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		mousePlacer.sprite = player.selectedSegment.sprite;
+		mousePlacer.coloredSprite = player.selectedSegment.coloredSprite;
+        mousePlacer.uncoloredSprite = player.selectedSegment.uncoloredSprite;
         mousePlacer.color = player.playerColor;
-		previewImage.color = player.playerColor;
 
-		// add direction button listeners
-		upButton.onClick.AddListener(() => setDirection(Creature.rotations.UP));
-		downButton.onClick.AddListener(() => setDirection(Creature.rotations.DOWN));
-		leftButton.onClick.AddListener(() => setDirection(Creature.rotations.LEFT));
-		rightButton.onClick.AddListener(() => setDirection(Creature.rotations.RIGHT));
-	}
+        rotationPreview.SetSegment(player.selectedSegment, player.playerColor);
+
+
+        rotationPreview.upButton.onClick.AddListener(() => SetDirection(Creature.rotations.UP));
+        rotationPreview.downButton.onClick.AddListener(() => SetDirection(Creature.rotations.DOWN));
+        rotationPreview.leftButton.onClick.AddListener(() => SetDirection(Creature.rotations.LEFT));
+        rotationPreview.rightButton.onClick.AddListener(() => SetDirection(Creature.rotations.RIGHT));
+    }
 
 	// Update is called once per frame
 	void Update () {
@@ -81,6 +80,13 @@ public class GameController : MonoBehaviour {
 		} else {
 			injured.gameObject.SetActive (false);
 		}
+        if (player.evoPoints >= 200)
+        {
+            buildReminder.SetActive(true);
+        } else
+        {
+            buildReminder.SetActive(false);
+        }
 	}
 
 	////////////////////
@@ -89,20 +95,17 @@ public class GameController : MonoBehaviour {
 
 	// select a segment, set the sprite for mouse placer and preview image
 	public void setSegment(Segment segment){
-		player.selectedSegment = segment;
-		mousePlacer.sprite = player.selectedSegment.sprite;
-		previewImage.sprite = player.selectedSegment.sprite;
-		if (segment.useColor) {
-            previewImage.color = player.playerColor;
-            mousePlacer.color = player.playerColor;
-		} else {
-            previewImage.color = new Color(255, 255, 255);
-            mousePlacer.color = new Color(255, 255, 255);
-        }
+        player.selectedSegment = segment;
+
+        mousePlacer.SetSegment(segment, player.playerColor);
+        rotationPreview.SetSegment(segment, player.playerColor);
 	}
 
-	public void setDirection(Creature.rotations currentRotation){
+    public void SetDirection(Creature.rotations currentRotation)
+    {
         player.buildRotation = currentRotation;
-		previewImage.gameObject.transform.localEulerAngles = new Vector3(0, 0, Creature.RotationToInt(currentRotation));
-	}
+
+        mousePlacer.SetDirection(currentRotation);
+        rotationPreview.SetDirection(currentRotation);
+    }
 }

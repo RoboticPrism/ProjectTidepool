@@ -8,6 +8,7 @@ public class BuildButton : MonoBehaviour {
     private GameController gameController;
     private Player player;
     public Button buttonObject;
+    public Image uncoloredObject;
     public Text buildCostObject;
     public Segment segmentType;
 
@@ -17,10 +18,25 @@ public class BuildButton : MonoBehaviour {
         player = FindObjectOfType<Player>();
         buttonObject.onClick.AddListener(() => gameController.setSegment(segmentType));
         buildCostObject.text = segmentType.pointCost.ToString();
-        buttonObject.image.sprite = segmentType.sprite;
-        if (segmentType.useColor)
+
+        if (segmentType.coloredSprite)
         {
+            buttonObject.image.sprite = segmentType.coloredSprite;
             buttonObject.image.color = player.playerColor;
+        } else
+        {
+            buttonObject.image.sprite = null;
+            buttonObject.image.color = new Color(0, 0, 0, 0);
+        }
+        if (segmentType.uncoloredSprite)
+        {
+            uncoloredObject.sprite = segmentType.uncoloredSprite;
+            uncoloredObject.color = Color.white;
+        }
+        else
+        {
+            uncoloredObject.sprite = null;
+            uncoloredObject.color = new Color(0, 0, 0, 0);
         }
     }
 	
