@@ -485,6 +485,8 @@ public class Creature : MonoBehaviour {
     {
         // if segment is core, or is adjacent to an item that is attached to the core, its attached to the core
         Segment currentSegment = GetSegmentAt(buildUnits);
+        Segment otherSegment;
+
         if (currentSegment.GetComponent<Core>() != null)
         {
             currentSegment.attachedToCore = true;
@@ -500,25 +502,24 @@ public class Creature : MonoBehaviour {
             }
         } else
         {
-            Segment otherSegment;
             if (IntToRotation((int)currentSegment.transform.rotation.eulerAngles.z) == rotations.UP)
-            {
-                otherSegment = GetSegmentAt(buildUnits + Vector2.up);
-                currentSegment.attachedToCore = otherSegment != null && otherSegment.attachedToCore;
-            }
-            else if (IntToRotation((int)currentSegment.transform.rotation.eulerAngles.z) == rotations.DOWN)
             {
                 otherSegment = GetSegmentAt(buildUnits + Vector2.down);
                 currentSegment.attachedToCore = otherSegment != null && otherSegment.attachedToCore;
             }
+            else if (IntToRotation((int)currentSegment.transform.rotation.eulerAngles.z) == rotations.DOWN)
+            {
+                otherSegment = GetSegmentAt(buildUnits + Vector2.up);
+                currentSegment.attachedToCore = otherSegment != null && otherSegment.attachedToCore;
+            }
             else if (IntToRotation((int)currentSegment.transform.rotation.eulerAngles.z) == rotations.LEFT)
             {
-                otherSegment = GetSegmentAt(buildUnits + Vector2.left);
+                otherSegment = GetSegmentAt(buildUnits + Vector2.right);
                 currentSegment.attachedToCore = otherSegment != null && otherSegment.attachedToCore;
             }
             else if (IntToRotation((int)currentSegment.transform.rotation.eulerAngles.z) == rotations.RIGHT)
             {
-                otherSegment = GetSegmentAt(buildUnits + Vector2.right);
+                otherSegment = GetSegmentAt(buildUnits + Vector2.left);
                 currentSegment.attachedToCore = otherSegment != null && otherSegment.attachedToCore;
             }
         }
@@ -526,27 +527,53 @@ public class Creature : MonoBehaviour {
         // state that we have checked this segment
         checkedSegments.Add(currentSegment);
 
-        
         // check all adjacent if pieces exist there and they haven't been checked yet
-        if (GetSegmentAt(buildUnits + Vector2.up) != null &&
-            !checkedSegments.Contains(GetSegmentAt(buildUnits + Vector2.up)))
+        otherSegment = GetSegmentAt(buildUnits + Vector2.up);
+        if (otherSegment != null && !checkedSegments.Contains(otherSegment))
         {
-            CheckIfOrphanedPiece(buildUnits + Vector2.up);
+            if (otherSegment.multidirectional)
+            {
+                CheckIfOrphanedPiece(buildUnits + Vector2.up);
+            } else if (IntToRotation((int)otherSegment.transform.rotation.eulerAngles.z) == rotations.UP)
+            {
+                CheckIfOrphanedPiece(buildUnits + Vector2.up);
+            }
         }
-        if (GetSegmentAt(buildUnits + Vector2.down) != null &&
-            !checkedSegments.Contains(GetSegmentAt(buildUnits + Vector2.down)))
+        otherSegment = GetSegmentAt(buildUnits + Vector2.down);
+        if (otherSegment != null && !checkedSegments.Contains(otherSegment))
         {
-            CheckIfOrphanedPiece(buildUnits + Vector2.down);
+            if (otherSegment.multidirectional)
+            {
+                CheckIfOrphanedPiece(buildUnits + Vector2.down);
+            }
+            else if (IntToRotation((int)otherSegment.transform.rotation.eulerAngles.z) == rotations.DOWN)
+            {
+                CheckIfOrphanedPiece(buildUnits + Vector2.down);
+            }
         }
-        if (GetSegmentAt(buildUnits + Vector2.left) != null &&
-            !checkedSegments.Contains(GetSegmentAt(buildUnits + Vector2.left)))
+        otherSegment = GetSegmentAt(buildUnits + Vector2.left);
+        if (otherSegment != null && !checkedSegments.Contains(otherSegment))
         {
-            CheckIfOrphanedPiece(buildUnits + Vector2.left);
+            if (otherSegment.multidirectional)
+            {
+                CheckIfOrphanedPiece(buildUnits + Vector2.left);
+            }
+            else if (IntToRotation((int)otherSegment.transform.rotation.eulerAngles.z) == rotations.LEFT)
+            {
+                CheckIfOrphanedPiece(buildUnits + Vector2.left);
+            }
         }
-        if (GetSegmentAt(buildUnits + Vector2.right) != null &&
-            !checkedSegments.Contains(GetSegmentAt(buildUnits + Vector2.right)))
+        otherSegment = GetSegmentAt(buildUnits + Vector2.right);
+        if (otherSegment != null && !checkedSegments.Contains(otherSegment))
         {
-            CheckIfOrphanedPiece(buildUnits + Vector2.right);
+            if (otherSegment.multidirectional)
+            {
+                CheckIfOrphanedPiece(buildUnits + Vector2.right);
+            }
+            else if (IntToRotation((int)otherSegment.transform.rotation.eulerAngles.z) == rotations.RIGHT)
+            {
+                CheckIfOrphanedPiece(buildUnits + Vector2.right);
+            }
         }
     }
 
