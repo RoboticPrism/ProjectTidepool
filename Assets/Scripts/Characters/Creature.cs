@@ -539,6 +539,7 @@ public class Creature : MonoBehaviour {
                 CheckIfOrphanedPiece(buildUnits + Vector2.up);
             }
         }
+
         otherSegment = GetSegmentAt(buildUnits + Vector2.down);
         if (otherSegment != null && !checkedSegments.Contains(otherSegment))
         {
@@ -551,6 +552,7 @@ public class Creature : MonoBehaviour {
                 CheckIfOrphanedPiece(buildUnits + Vector2.down);
             }
         }
+
         otherSegment = GetSegmentAt(buildUnits + Vector2.left);
         if (otherSegment != null && !checkedSegments.Contains(otherSegment))
         {
@@ -563,6 +565,7 @@ public class Creature : MonoBehaviour {
                 CheckIfOrphanedPiece(buildUnits + Vector2.left);
             }
         }
+
         otherSegment = GetSegmentAt(buildUnits + Vector2.right);
         if (otherSegment != null && !checkedSegments.Contains(otherSegment))
         {

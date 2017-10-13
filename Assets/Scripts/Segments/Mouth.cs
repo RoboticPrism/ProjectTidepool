@@ -23,7 +23,7 @@ public class Mouth : Segment {
 	void OnCollisionStay2D(Collision2D col)
     {
         Segment collidedSegment = col.collider.gameObject.GetComponent<Segment>();
-        if (creature != null && collidedSegment && collidedSegment.GetComponent<SpikeBit>() == null)
+        if (creature != null && collidedSegment && collidedSegment.creature != null && collidedSegment.GetComponent<SpikeBit>() == null)
         {
             if (collidedSegment.creature && collidedSegment.creature != creature)
             {
