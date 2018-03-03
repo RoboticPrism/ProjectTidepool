@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class BuildPanel : MonoBehaviour {
 
-    public Sprite image;
     public List<BuildButton> buildButtons = new List<BuildButton>();
 
     private float padding = 0.05f;

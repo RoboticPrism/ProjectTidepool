@@ -9,9 +9,10 @@ public abstract class Segment : MonoBehaviour{
     public Sprite uncoloredSprite;
     public int pointCost;
     public int healthBonus;
+    public int energyBonus;
     public int speedBonus;
     public int weightBonus;
-    public bool useColor;
+    public int level;
     public bool multidirectional;
     public bool attachedToCore = true;
     public bool edible;

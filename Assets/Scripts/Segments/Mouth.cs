@@ -23,15 +23,32 @@ public class Mouth : Segment {
 	void OnCollisionStay2D(Collision2D col)
     {
         Segment collidedSegment = col.collider.gameObject.GetComponent<Segment>();
-        if (creature != null && collidedSegment && collidedSegment.creature != null && collidedSegment.GetComponent<SpikeBit>() == null)
+        if (creature && collidedSegment.creature)
         {
+            // if we didn't collide with a dead piece or ourselves
             if (collidedSegment.creature && collidedSegment.creature != creature)
             {
                 if (attCooldown >= attCooldownMax)
                 {
-                    collidedSegment.creature.TakeDamage(1);
-                    MarkDamage(col);
-                    attCooldown = 0;
+                    // spikes hitting spikes should have no effect (just clank)
+                    if (collidedSegment.GetComponent<SpikeBit>())
+                    {
+                        // Do nothing
+                    }
+                    // armor takes less damage
+                    else if (collidedSegment.GetComponent<Armor>())
+                    {
+                        collidedSegment.creature.TakeDamage(1);
+                        MarkDamage(col);
+                        attCooldown = 0;
+                    }
+                    // everything else takes full damage
+                    else
+                    {
+                        collidedSegment.creature.TakeDamage(2);
+                        MarkDamage(col);
+                        attCooldown = 0;
+                    }
                 }
             }
         }

@@ -10,8 +10,9 @@ public class Spike : Segment {
 
     }
 
-    void FixedUpdate()
+    new void FixedUpdate()
     {
+        base.FixedUpdate();
         if (creature)
         {
             if (creature.action)

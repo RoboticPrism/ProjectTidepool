@@ -91,7 +91,7 @@ public class Creature : MonoBehaviour {
         // energy
         if (action)
         {
-            energy -= 0.005f;
+            energy -= 0.007f;
             if (energy <= 0)
             {
                 energy = 0f;
@@ -360,7 +360,7 @@ public class Creature : MonoBehaviour {
 	public void AddSegment(Vector2 buildUnits, rotations currentRotation, Segment segment){
 		if(CheckPlace(buildUnits)){
 			if(segment && 
-                evoPoints > segment.pointCost &&
+                evoPoints >= segment.pointCost &&
                 (segment.multidirectional || CheckRot(buildUnits, currentRotation)))
             {
 				Segment newSegment = ((GameObject)Instantiate(segment.gameObject,
@@ -380,14 +380,12 @@ public class Creature : MonoBehaviour {
                 RecalculateNeighborPlaces(buildUnits);
                 
                 // set color
-                if (segment.useColor)
-                {
-                    newSegment.GetComponent<SpriteRenderer>().color = playerColor;
-                }
+                newSegment.GetComponent<SpriteRenderer>().color = playerColor;
 
                 // set stats
                 UpdateEvoPoints(evoPoints - segment.pointCost);
                 totalHealth += segment.healthBonus;
+                totalEnergy += segment.energyBonus;
                 totalSpeed += segment.speedBonus;
                 weight += segment.weightBonus;
 			}
@@ -433,6 +431,7 @@ public class Creature : MonoBehaviour {
             // set stats
             UpdateEvoPoints(evoPoints + segment.pointCost);
             totalHealth -= segment.healthBonus;
+            totalEnergy -= segment.energyBonus;
             totalSpeed -= segment.speedBonus;
             weight -= segment.weightBonus;
 

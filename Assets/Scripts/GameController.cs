@@ -99,6 +99,8 @@ public class GameController : MonoBehaviour {
 
         mousePlacer.SetSegment(segment, player.playerColor);
         rotationPreview.SetSegment(segment, player.playerColor);
+        SetDirection(Creature.rotations.UP);
+
 	}
 
     public void SetDirection(Creature.rotations currentRotation)

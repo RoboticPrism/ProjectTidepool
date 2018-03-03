@@ -73,7 +73,7 @@ public class Enemy : Creature {
                         Vector3 targetDir = target.transform.position - transform.position;
                         float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
                         Quaternion q = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-                        transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * totalRotationSpeed / 10);
+                        transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * totalRotationSpeed / 3);
                         float offrot = Mathf.Abs(angle - 90 - transform.rotation.eulerAngles.z);
                         if (offrot > 180)
                         {
