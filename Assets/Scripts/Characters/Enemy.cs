@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 public class Enemy : Creature {
 	public GameObject target;
-	public bool active=false;
+	public bool active = false;
+    public bool build = false;
 
     public Segment corePrefab;
     public Segment mouthPrefab;
@@ -39,7 +40,7 @@ public class Enemy : Creature {
 				}
 			}
 		}
-        if (active)
+        if (active  && !build)
         {
             speed = totalSpeed;
             float totalRotationSpeed = totalSpeed * rotationRatio;
@@ -116,8 +117,11 @@ public class Enemy : Creature {
             }
             if (evoPoints >= 100)
             {
-                Generate();
+                BuildEgg();
             }
+        } else if (active && build)
+        {
+            Upgrade();
         }
 	}
 
@@ -125,12 +129,49 @@ public class Enemy : Creature {
     void Generate()
     {
         int totalEvoPoints = evoPoints;
-        GenerateParts((int)(totalEvoPoints * 0.3f), bodyPrefabs);
+
+        // Ensure we don't use pieces above our level
+        List<Segment> validBodyPrefabs = new List<Segment>();
+        foreach(Segment segment in bodyPrefabs)
+        {
+            if(segment.level <= level)
+            {
+                validBodyPrefabs.Add(segment);
+            }
+        }
+        List<Segment> validMainPrefabs = new List<Segment>();
+        foreach (Segment segment in mainPrefabs)
+        {
+            if (segment.level <= level)
+            {
+                validMainPrefabs.Add(segment);
+            }
+        }
+        List<Segment> validAttackPrefabs = new List<Segment>();
+        foreach (Segment segment in attackPrefabs)
+        {
+            if (segment.level <= level)
+            {
+                validAttackPrefabs.Add(segment);
+            }
+        }
+        List<Segment> validMovementPrefabs = new List<Segment>();
+        foreach (Segment segment in movementPrefabs)
+        {
+            if (segment.level <= level)
+            {
+                validMovementPrefabs.Add(segment);
+            }
+        }
+        
+        // Generate in a smart enough order
+        GenerateParts((int)(totalEvoPoints * 0.3f), validBodyPrefabs);
+        
         // Manually generate a mouth on the front, otherwise stuff gets... weird...
         GenerateMouth();
-        GenerateParts((int)(totalEvoPoints * 0.1f), mainPrefabs);
-        GenerateParts((int)(totalEvoPoints * 0.3f), attackPrefabs);
-        GenerateParts((int)(totalEvoPoints * 0.3f), movementPrefabs);
+        GenerateParts((int)(totalEvoPoints * 0.1f), validMainPrefabs);
+        GenerateParts((int)(totalEvoPoints * 0.3f), validAttackPrefabs);
+        GenerateParts((int)(totalEvoPoints * 0.3f), validMovementPrefabs);
     }
 
     // generates a copy of an existing enemy layout
@@ -158,15 +199,25 @@ public class Enemy : Creature {
         while(evoPointAllowance > 0 && validBuildSpaces.Count > 0 && segments.Count > 0 && maxTries > 0)
         {
             // Get our random values together
-            Segment randomSegment = segments[Random.Range(0, segments.Count - 1)];
-            Vector2 randomBuildSpace = validBuildSpaces[Random.Range(0, validBuildSpaces.Count - 1)];
+            Segment randomSegment = segments[Random.Range(0, segments.Count)];
+            Vector2 randomBuildSpace = validBuildSpaces[Random.Range(0, validBuildSpaces.Count)];
             rotations randomRotation = 0;
             if (!randomSegment.multidirectional)
             {
                 List<rotations> validRotations = ValidRotations(randomBuildSpace, randomSegment);
                 if (validRotations.Count > 0)
                 {
-                    randomRotation = validRotations[Random.Range(0, validRotations.Count - 1)];
+                    // hard code some priority here to improve symmetry, may revisit this later since we lose a lot of the random elements with this change
+                    if(validRotations.Contains(rotations.UP))
+                    {
+                        randomRotation = rotations.UP;
+                    } else if (validRotations.Contains(rotations.DOWN))
+                    {
+                        randomRotation = rotations.DOWN;
+                    } else
+                    {
+                        randomRotation = validRotations[0];
+                    }
                 }
             }
 
@@ -190,9 +241,27 @@ public class Enemy : Creature {
         }
     }
 
-    
+    void BuildEgg()
+    {
+        if (eggTime > 0 && !eggObject)
+        {
+            eggObject = Instantiate(eggPrefab, this.transform.position, this.transform.rotation, this.transform);
+            eggObject.transform.localScale = Vector3.zero;
+        }
+        eggTime += 1;
 
-	void Upgrade(){
+        if (eggTime >= eggTimeMax)
+        {
+            build = true;
+        }
+    }
 
-	}
+	void Upgrade()
+    {
+        level += 1;
+        Generate();
+        build = false;
+        Destroy(this.eggObject);
+        Instantiate(brokenEggPrefab, this.transform.position, this.transform.rotation);
+    }
 }

@@ -46,8 +46,7 @@ public class Creature : MonoBehaviour {
 	protected int healTimer = 0;
 
     public bool action = false;
-
-	public int evoLevel;
+    
     public int evoPoints;
 
     public enum rotations { UP, DOWN, LEFT, RIGHT}
