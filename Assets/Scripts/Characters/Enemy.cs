@@ -26,95 +26,13 @@ public class Enemy : Creature {
 	new void FixedUpdate () {
 		base.FixedUpdate ();
         // find a target
-        target = GameObject.FindGameObjectWithTag ("Player");
-		foreach (GameObject g in GameObject.FindGameObjectsWithTag("Enemy")) {
-			if(g!=this.gameObject){
-				if(target==null){
-					target=g;
-				}
-				else{
-					if(Vector3.Distance(this.transform.position,g.transform.position)<
-			   			Vector3.Distance(this.transform.position,target.transform.position)){
-							target=g;
-						}
-				}
-			}
-		}
+        FindTarget();
         if (active  && !build)
         {
-            speed = totalSpeed;
-            float totalRotationSpeed = totalSpeed * rotationRatio;
-            if (target != null)
-            {
-                if (this.level < target.GetComponent<Creature>().level)
-                {
-                    if (target != null)
-                    {
-                        Vector3 targetDir = target.transform.position - transform.position;
-                        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
-                        Quaternion q = Quaternion.AngleAxis(angle + 90, Vector3.forward);
-                        transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * totalRotationSpeed / 10);
-                        float offset = Vector3.Distance(target.transform.position, transform.position);
-                        if (offset > 50)
-                        {
-                            speed = 0;
-                        }
-                        else
-                        {
-                            speed = totalSpeed;
-                        }
-                        transform.Translate(Vector3.up * speed / 100);
-                    }
-                }
-                else
-                {
-                    if (target != null)
-                    {
-                        // movement and rotation
-                        Vector3 targetDir = target.transform.position - transform.position;
-                        float angle = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
-                        Quaternion q = Quaternion.AngleAxis(angle - 90, Vector3.forward);
-                        transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * totalRotationSpeed / 3);
-                        float offrot = Mathf.Abs(angle - 90 - transform.rotation.eulerAngles.z);
-                        if (offrot > 180)
-                        {
-                            offrot = 360 - offrot;
-                        }
-                        if (offrot > 90)
-                        {
-                            speed = 0;
-                        }
-                        else
-                        {
-                            speed = totalSpeed * (1 - offrot / 90);
-                        }
-                        transform.Translate(Vector3.up * speed / 100);
-                        // action activation
-                        if (target.GetComponent<Creature>() && Vector3.Distance(this.transform.position, target.transform.position) < 5)
-                        {
-                            if (energy > 0)
-                            {
-                                action = true;
-                            }
-                            else
-                            {
-                                action = false;
-                            }
-                        }
-                        else
-                        {
-                            action = false;
-                        }
-                    }
 
-                }
-            }
-            else
-            {
-                speed = 0;
-                rotationSpeed = 0;
-                GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
-            }
+            Steering();
+            DoAction();
+            
             if (evoPoints >= 100)
             {
                 BuildEgg();
@@ -124,6 +42,129 @@ public class Enemy : Creature {
             Upgrade();
         }
 	}
+
+    void FindTarget()
+    {
+        GameObject.FindGameObjectWithTag("Player");
+        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            if (g != this.gameObject)
+            {
+                if (target == null)
+                {
+                    target = g;
+                }
+                else
+                {
+                    if (Vector3.Distance(this.transform.position, g.transform.position) <
+                           Vector3.Distance(this.transform.position, target.transform.position))
+                    {
+                        target = g;
+                    }
+                }
+            }
+        }
+    }
+
+    void Steering()
+    {
+        if (target)
+        {
+            SteerTowards(target);
+        }
+        else
+        {
+            speed = 0;
+            rotationSpeed = 0;
+            GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+        }
+    }
+
+    // run towards a given target
+    void SteerTowards(GameObject obj)
+    {
+        speed = totalSpeed/weight;
+        float totalRotationSpeed = totalSpeed * rotationRatio;
+        if (obj != null)
+        {
+            // rotation
+            Vector3 targetDir = obj.transform.position - transform.position;
+            float angleToTarget = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+            float myAngle = transform.rotation.eulerAngles.z;
+            // lock to 180, -180
+            while (myAngle > 180)
+            {
+                myAngle -= 360;
+            }
+            while (myAngle < -180)
+            {
+                myAngle += 360;
+            }
+            float angularDiff = angleToTarget - myAngle - 90;
+            // lock to 180, -180
+            while (angularDiff > 180)
+            {
+                angularDiff -= 360;
+            }
+            while (angularDiff < -180)
+            {
+                angularDiff += 360;
+            }
+            float angularSpeed;
+            if (Mathf.Abs(angularDiff) > 90)
+            {
+                angularSpeed = totalRotationSpeed * angularDiff/Mathf.Abs(angularDiff);
+            } else if (Mathf.Abs(angularDiff) > 15)
+            {
+                angularSpeed = totalRotationSpeed / 2 * angularDiff / Mathf.Abs(angularDiff);
+            } else
+            {
+                angularSpeed = totalRotationSpeed * angularDiff / 180;
+            }
+            transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + angularSpeed));
+
+            // speed
+            float dist = Vector3.Distance(obj.transform.position, transform.position);
+            if (Mathf.Abs(angularDiff) > 90)
+            {
+                speed = 0;
+            }
+            else if (dist > 3)
+            {
+                speed = totalSpeed;
+            } else
+            {
+                speed = totalSpeed/2;
+            }
+            transform.Translate(Vector3.up * speed / 50);
+        }
+    }
+
+    // run away from a given target
+    void SteerAway(GameObject obj)
+    {
+
+    }
+
+    // Activates spikes and other options while near another creature
+    void DoAction()
+    {
+        if (target.GetComponent<Creature>() && Vector3.Distance(this.transform.position, target.transform.position) < 5)
+        {
+            if (energy > 0)
+            {
+                action = true;
+            }
+            else
+            {
+                action = false;
+            }
+        }
+        else
+        {
+            action = false;
+        }
+    }
 
     // randomly builds a new enemy layout
     void Generate()
