@@ -47,7 +47,10 @@ public class Creature : MonoBehaviour {
 
     public bool action = false;
     
+    // Creature quick stats
     public int evoPoints;
+    public int worth = 0;
+    public int threat = 0;
 
     public enum rotations { UP, DOWN, LEFT, RIGHT}
 
@@ -387,6 +390,9 @@ public class Creature : MonoBehaviour {
                 totalEnergy += segment.energyBonus;
                 totalSpeed += segment.speedBonus;
                 weight += segment.weightBonus;
+
+                worth += segment.pointCost / 2;
+                threat += segment.threat;
 			}
 		}
 	}
@@ -433,6 +439,9 @@ public class Creature : MonoBehaviour {
             totalEnergy -= segment.energyBonus;
             totalSpeed -= segment.speedBonus;
             weight -= segment.weightBonus;
+
+            worth -= segment.pointCost / 2;
+            threat -= segment.threat;
 
             // destroy gameobject
             Destroy(GetSegmentAt(buildUnits).gameObject);

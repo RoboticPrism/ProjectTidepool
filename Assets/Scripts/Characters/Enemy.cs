@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Enemy : Creature {
-	public GameObject target;
+	public Creature target;
 	public bool active = false;
     public bool build = false;
 
@@ -15,6 +15,16 @@ public class Enemy : Creature {
     public List<Segment> defensePrefabs;
     public List<Segment> movementPrefabs;
 
+    public List<Creature> nearbyCreatures = new List<Creature>();
+
+    // AI vars
+    float threatToWorthRatio = 5f; // how much this creature values safety to rewards, we can mix this around later for fun results
+    float threatToEvolveRatio = 5f; // how much this creature values safety to being able to evolve, we can mix this around later for fun results
+    int evolveThreshold = 100; // minimum number of points required to begin considering evolving as an option
+
+    public enum state { IDLE, ATTACK, RUN, EVOLVE }
+    public state currentState = state.IDLE;
+
     // Use this for initialization
     new void Start () {
 		base.Start ();
@@ -25,58 +35,110 @@ public class Enemy : Creature {
 	// Update is called once per frame
 	new void FixedUpdate () {
 		base.FixedUpdate ();
-        // find a target
-        FindTarget();
-        if (active  && !build)
+        if (active)
         {
-
-            Steering();
-            DoAction();
-            
-            if (evoPoints >= 100)
+            FindTarget();
+            switch (currentState)
             {
-                BuildEgg();
+                case state.IDLE:
+                    //do nothing
+                    break;
+                case state.ATTACK:
+                    SteerTowards(target.gameObject);
+                    break;
+                case state.RUN:
+                    SteerAway(target.gameObject);
+                    break;
+                case state.EVOLVE:
+                    if (build)
+                    {
+                        Upgrade();
+                    }
+                    else
+                    {
+                        BuildEgg();
+                    }
+                    break;
             }
-        } else if (active && build)
-        {
-            Upgrade();
         }
 	}
 
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        Creature c = col.GetComponent<Creature>();
+        if(c)
+        {
+            nearbyCreatures.Add(c);
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D col)
+    {
+        Creature c = col.GetComponent<Creature>();
+        if (c)
+        {
+            nearbyCreatures.Remove(c);
+        }
+    }
+
     void FindTarget()
     {
-        GameObject.FindGameObjectWithTag("Player");
-        foreach (GameObject g in GameObject.FindGameObjectsWithTag("Enemy"))
+        int areaWorth = 0; // total point worth in the area
+        int areaThreat = 0; // total threat value of the area
+        Creature biggestThreat = null;
+        Creature bestTarget = null;
+
+        // evaluate local area
+        foreach (Creature c in nearbyCreatures)
         {
-            if (g != this.gameObject)
+            if (c != this.gameObject)
             {
-                if (target == null)
+                areaWorth += c.worth;
+                areaThreat += c.threat;
+                if (biggestThreat == null)
                 {
-                    target = g;
+                    biggestThreat = c;
                 }
-                else
+                else if (c.threat > biggestThreat.threat)
                 {
-                    if (Vector3.Distance(this.transform.position, g.transform.position) <
-                           Vector3.Distance(this.transform.position, target.transform.position))
+                    biggestThreat = c;
+                }
+
+                // only consider targets we are stronger than
+                if (threat > c.threat)
+                {
+                    if (bestTarget == null)
                     {
-                        target = g;
+                        bestTarget = c;
+                    }
+                    // take the highest worth to threat ration
+                    else if (c.worth / c.threat > bestTarget.worth / bestTarget.threat)
+                    {
+                        bestTarget = c;
                     }
                 }
             }
         }
-    }
 
-    void Steering()
-    {
-        if (target)
+        // make state swap based on evaluation
+        if (evoPoints >= evolveThreshold && areaThreat * threatToEvolveRatio < evoPoints)
         {
-            SteerTowards(target);
+            currentState = state.EVOLVE;
+        }
+        else if (bestTarget && areaThreat * threatToWorthRatio < areaWorth)
+        {
+            target = bestTarget;
+            currentState = state.ATTACK;
+        }
+        else if (biggestThreat)
+        {
+            target = biggestThreat;
+            currentState = state.RUN;
         }
         else
         {
-            speed = 0;
-            rotationSpeed = 0;
-            GetComponent<Rigidbody2D>().velocity = new Vector2(0, 0);
+            target = null;
+            currentState = state.IDLE;
         }
     }
 
@@ -100,7 +162,7 @@ public class Enemy : Creature {
             {
                 myAngle += 360;
             }
-            float angularDiff = angleToTarget - myAngle - 90;
+            float angularDiff = angleToTarget - myAngle - 90; // -90 because unity puts 0 as up
             // lock to 180, -180
             while (angularDiff > 180)
             {
@@ -143,13 +205,59 @@ public class Enemy : Creature {
     // run away from a given target
     void SteerAway(GameObject obj)
     {
+        speed = totalSpeed / weight;
+        float totalRotationSpeed = totalSpeed * rotationRatio;
+        if (obj != null)
+        {
+            // rotation
+            Vector3 targetDir = obj.transform.position - transform.position;
+            float angleToTarget = Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg;
+            float myAngle = transform.rotation.eulerAngles.z;
+            // lock to 180, -180
+            while (myAngle > 180)
+            {
+                myAngle -= 360;
+            }
+            while (myAngle < -180)
+            {
+                myAngle += 360;
+            }
+            float angularDiff = angleToTarget - myAngle + 90; // + 90 because unity puts 0 as up
+            // lock to 180, -180
+            while (angularDiff > 180)
+            {
+                angularDiff -= 360;
+            }
+            while (angularDiff < -180)
+            {
+                angularDiff += 360;
+            }
+            float angularSpeed;
+            if (Mathf.Abs(angularDiff) > 90)
+            {
+                angularSpeed = totalRotationSpeed * angularDiff / Mathf.Abs(angularDiff);
+            }
+            else if (Mathf.Abs(angularDiff) > 15)
+            {
+                angularSpeed = totalRotationSpeed / 2 * angularDiff / Mathf.Abs(angularDiff);
+            }
+            else
+            {
+                angularSpeed = totalRotationSpeed * angularDiff / 180;
+            }
+            transform.rotation = Quaternion.Euler(new Vector3(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z + angularSpeed));
 
+            // speed
+            float dist = Vector3.Distance(obj.transform.position, transform.position);
+            speed = totalSpeed;
+            transform.Translate(Vector3.up * speed / 50);
+        }
     }
 
     // Activates spikes and other options while near another creature
     void DoAction()
     {
-        if (target.GetComponent<Creature>() && Vector3.Distance(this.transform.position, target.transform.position) < 5)
+        if (target && target.GetComponent<Creature>() && Vector3.Distance(this.transform.position, target.transform.position) < 5)
         {
             if (energy > 0)
             {

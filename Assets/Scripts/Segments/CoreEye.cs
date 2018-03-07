@@ -19,6 +19,7 @@ public class CoreEye : Segment {
     new void FixedUpdate ()
     {
         base.FixedUpdate();
+        // eye tracks closest creature for player
         if (creature)
         {
             if (creature.GetComponent<Player>())
@@ -42,9 +43,14 @@ public class CoreEye : Segment {
                     }
                 }
             }
+            // eye tracks current target for enemy
             else if (creature.GetComponent<Enemy>())
             {
-                target = creature.GetComponent<Enemy>().target;
+                Enemy e = creature.GetComponent<Enemy>();
+                if (e.target)
+                {
+                    target = e.target.gameObject;
+                }
             }
         }
         if (target)

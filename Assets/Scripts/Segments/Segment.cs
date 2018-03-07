@@ -16,6 +16,7 @@ public abstract class Segment : MonoBehaviour{
     public bool multidirectional;
     public bool attachedToCore = true;
     public bool edible;
+    public int threat;
 
     public void FixedUpdate()
     {
