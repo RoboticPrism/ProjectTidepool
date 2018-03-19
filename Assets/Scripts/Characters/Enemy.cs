@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Enemy : Creature {
-	public Creature target;
+	public GameObject target;
 	public bool active = false;
     public bool build = false;
 
@@ -15,7 +15,7 @@ public class Enemy : Creature {
     public List<Segment> defensePrefabs;
     public List<Segment> movementPrefabs;
 
-    public List<Creature> nearbyCreatures = new List<Creature>();
+    public List<Stimulus> nearbyStimuli = new List<Stimulus>();
 
     // AI vars
     float threatToWorthRatio = 5f; // how much this creature values safety to rewards, we can mix this around later for fun results
@@ -65,74 +65,66 @@ public class Enemy : Creature {
 
     void OnTriggerEnter2D(Collider2D col)
     {
-        Creature c = col.GetComponent<Creature>();
-        if(c)
+        Stimulus s = col.GetComponent<Stimulus>();
+        if (s)
         {
-            nearbyCreatures.Add(c);
+            nearbyStimuli.Add(s);
         }
     }
 
     void OnTriggerExit2D(Collider2D col)
     {
-        Creature c = col.GetComponent<Creature>();
-        if (c)
+        Stimulus s = col.GetComponent<Stimulus>();
+        if (s)
         {
-            nearbyCreatures.Remove(c);
+            nearbyStimuli.Remove(s);
         }
     }
 
     void FindTarget()
     {
-        int areaWorth = 0; // total point worth in the area
-        int areaThreat = 0; // total threat value of the area
-        Creature biggestThreat = null;
-        Creature bestTarget = null;
+        float currentHunger = 0; // total point worth in the area
+        float currentThreat = 0; // total threat value of the area
+        Stimulus bestWorth = null;
+        Stimulus worstThreat = null;
+        List<Stimulus> removeList = new List<Stimulus>();
+
+        // remove any stimuli that may have gotten deleted (i.e. eaten)
+        nearbyStimuli.RemoveAll(stim => stim == null);
 
         // evaluate local area
-        foreach (Creature c in nearbyCreatures)
+        foreach (Stimulus stimulus in nearbyStimuli)
         {
-            if (c != this.gameObject)
-            {
-                areaWorth += c.worth;
-                areaThreat += c.threat;
-                if (biggestThreat == null)
-                {
-                    biggestThreat = c;
-                }
-                else if (c.threat > biggestThreat.threat)
-                {
-                    biggestThreat = c;
-                }
+            float radius = GetComponent<CircleCollider2D>().radius;
+            float sWorth = stimulus.worth * (radius/Vector3.Distance(stimulus.transform.position, transform.position));
+            float sThreat = stimulus.threat * (radius/Vector3.Distance(stimulus.transform.position, transform.position));
 
-                // only consider targets we are stronger than
-                if (threat > c.threat)
-                {
-                    if (bestTarget == null)
-                    {
-                        bestTarget = c;
-                    }
-                    // take the highest worth to threat ration
-                    else if (c.worth / c.threat > bestTarget.worth / bestTarget.threat)
-                    {
-                        bestTarget = c;
-                    }
-                }
+            if (bestWorth == null || bestWorth.worth < stimulus.worth)
+            {
+                bestWorth = stimulus;
             }
+            if (worstThreat == null || worstThreat.threat < stimulus.threat)
+            {
+                worstThreat = stimulus;
+            }
+
+            currentHunger += sWorth;
+            currentThreat += sThreat;
         }
 
         // make state swap based on evaluation
-        if (evoPoints >= evolveThreshold && areaThreat * threatToEvolveRatio < evoPoints)
+        if (evoPoints >= evolveThreshold && currentThreat * threatToEvolveRatio < evoPoints)
         {
             currentState = state.EVOLVE;
         }
-        else if (bestTarget && areaThreat * threatToWorthRatio < areaWorth)
+        else if (bestWorth && currentThreat * threatToWorthRatio < currentHunger)
         {
-            target = bestTarget;
+            target = bestWorth.gameObject;
             currentState = state.ATTACK;
         }
-        else if (biggestThreat)
+        else if (worstThreat)
         {
-            target = biggestThreat;
+            target = worstThreat.gameObject;
             currentState = state.RUN;
         }
         else
@@ -145,7 +137,7 @@ public class Enemy : Creature {
     // run towards a given target
     void SteerTowards(GameObject obj)
     {
-        speed = totalSpeed/weight;
+        speed = Mathf.Max(1f, totalSpeed/weight);
         float totalRotationSpeed = totalSpeed * rotationRatio;
         if (obj != null)
         {

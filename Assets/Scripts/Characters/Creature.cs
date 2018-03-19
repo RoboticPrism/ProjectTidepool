@@ -49,8 +49,7 @@ public class Creature : MonoBehaviour {
     
     // Creature quick stats
     public int evoPoints;
-    public int worth = 0;
-    public int threat = 0;
+    public Stimulus stimulus;
 
     public enum rotations { UP, DOWN, LEFT, RIGHT}
 
@@ -59,7 +58,8 @@ public class Creature : MonoBehaviour {
 
     // Use this for initialization
     protected void Start () {
-		segments = new Segment[max_height*2+1,max_width*2+1];
+        stimulus = GetComponent<Stimulus>();
+        segments = new Segment[max_height*2+1,max_width*2+1];
 		placeable = new bool[max_height*2+1,max_width*2+1];
 		//Create Core
 		segments[max_height,max_width] = ((GameObject)Instantiate(core, 
@@ -391,8 +391,8 @@ public class Creature : MonoBehaviour {
                 totalSpeed += segment.speedBonus;
                 weight += segment.weightBonus;
 
-                worth += segment.pointCost / 2;
-                threat += segment.threat;
+                stimulus.worth += segment.pointCost / 2;
+                stimulus.threat += segment.threat;
 			}
 		}
 	}
@@ -440,8 +440,8 @@ public class Creature : MonoBehaviour {
             totalSpeed -= segment.speedBonus;
             weight -= segment.weightBonus;
 
-            worth -= segment.pointCost / 2;
-            threat -= segment.threat;
+            stimulus.worth -= segment.pointCost / 2;
+            stimulus.threat -= segment.threat;
 
             // destroy gameobject
             Destroy(GetSegmentAt(buildUnits).gameObject);
@@ -627,8 +627,18 @@ public class Creature : MonoBehaviour {
 					GameObject g = (GameObject)Instantiate(_currentSegement.gameObject,
                                                            _currentSegement.transform.position,
                                                            _currentSegement.transform.rotation);
-					g.AddComponent<Rigidbody2D>().drag = 3;
-					g.GetComponent<Segment>().creature = null;
+                    // update segment
+                    Segment seg = g.GetComponent<Segment>();
+                    seg.creature = null;
+
+                    // add rigidbody
+                    g.AddComponent<Rigidbody2D>().drag = 3;
+
+                    // add new stimulus
+                    Stimulus s = g.AddComponent<Stimulus>();
+                    s.worth = seg.pointCost / 2;
+                    s.threat = 0;
+
 					Destroy (_currentSegement);
                     SetSegmentAt(ArrayToBuildUnits(new Vector2(x, y)), null);
                 }
