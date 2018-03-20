@@ -23,9 +23,9 @@ public class Mouth : Segment {
 	void OnCollisionStay2D(Collision2D col)
     {
         Segment collidedSegment = col.collider.gameObject.GetComponent<Segment>();
-        if (creature && collidedSegment.creature)
+        if (creature && collidedSegment)
         {
-            // if we didn't collide with a dead piece or ourselves
+            // if its attached to a creature that isnt us, do damage
             if (collidedSegment.creature && collidedSegment.creature != creature)
             {
                 if (attCooldown >= attCooldownMax)
@@ -51,11 +51,11 @@ public class Mouth : Segment {
                     }
                 }
             }
-        }
-        else if (creature && collidedSegment.creature == null && collidedSegment.edible)
-        {
-            creature.UpdateEvoPoints(creature.evoPoints + (int)Mathf.Floor(collidedSegment.pointCost / 2));
-            Destroy(col.collider.gameObject);
+            else if (collidedSegment.creature == null && collidedSegment.edible)
+            {
+                creature.UpdateEvoPoints(creature.evoPoints + (int)Mathf.Floor(collidedSegment.pointCost / 2));
+                Destroy(col.collider.gameObject);
+            }
         }
 	}
 	void MarkDamage(Collision2D col){

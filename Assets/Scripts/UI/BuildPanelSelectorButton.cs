@@ -31,7 +31,7 @@ public class BuildPanelSelectorButton : MonoBehaviour {
         buttonObject.image.sprite = newImage;
         if (useColor)
         {
-            buttonObject.image.color = player.playerColor;
+            buttonObject.image.color = player.color;
         }
     }
 }

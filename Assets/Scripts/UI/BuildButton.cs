@@ -22,7 +22,7 @@ public class BuildButton : MonoBehaviour {
         if (segmentType.coloredSprite)
         {
             buttonObject.image.sprite = segmentType.coloredSprite;
-            buttonObject.image.color = player.playerColor;
+            buttonObject.image.color = player.color;
         } else
         {
             buttonObject.image.sprite = null;

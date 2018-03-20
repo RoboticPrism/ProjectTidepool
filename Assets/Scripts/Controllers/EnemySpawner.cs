@@ -3,11 +3,7 @@ using System.Collections;
 
 public class EnemySpawner : MonoBehaviour {
 	public GameObject target;
-	public GameObject enemyL1;
-	public GameObject enemyL2;
-	public GameObject enemyL3;
-	public GameObject enemyL4;
-	public GameObject enemyL5;
+	public GameObject enemy;
 	public int rangeMin=30;
 	public int rangeMax=60;
 	public int maxEnemies = 15;
@@ -31,47 +27,24 @@ public class EnemySpawner : MonoBehaviour {
 	void CreateEnemy(){
 		int radius = Random.Range (0, 360);
 		int distance = Random.Range (rangeMin, rangeMax);
-		int power = Random.Range (0, 10); // this needs some serious love, this whole system is massively illegible
+		int power = Random.Range (0, 5);
 		bool act = true;
 		if (target != null && target.GetComponent<Player>()) {
 			act = !target.GetComponent<Player>().build;
 		} else {
 			act=true;
 		}
-		GameObject g;
-        if (power > 8)
-        {
-            g = (GameObject)Instantiate(
-                enemyL3, 
+		GameObject g = Instantiate(
+                enemy, 
                 new Vector3(
                     loc.x + Mathf.Cos(radius) * distance,
                     loc.y + Mathf.Sin(radius) * distance, 
                     0
                 ),
                 Quaternion.Euler(new Vector3(0, 0, 0)));
-        }
-        else if (power > 5)
-        {
-			g = (GameObject)Instantiate (
-                enemyL2,
-                new Vector3(
-                    loc.x + Mathf.Cos(radius) * distance,
-                    loc.y + Mathf.Sin(radius) * distance,
-                    0
-                ),
-                Quaternion.Euler(new Vector3(0, 0, 0)));
-        }
-        else
-        {
-			g = (GameObject)Instantiate (
-                enemyL1,
-                new Vector3(
-                    loc.x + Mathf.Cos(radius) * distance,
-                    loc.y + Mathf.Sin(radius) * distance,
-                    0
-                ),
-                Quaternion.Euler(new Vector3(0, 0, 0)));
-        }
-		g.GetComponent<Enemy> ().active = act;
+        Enemy newEnemy = g.GetComponent<Enemy>();
+        newEnemy.active = act;
+        newEnemy.level = power;
+        newEnemy.evoPoints = 50 * (power + 2);
 	}
 }

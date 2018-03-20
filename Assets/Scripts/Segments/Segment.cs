@@ -25,4 +25,12 @@ public abstract class Segment : MonoBehaviour{
             Destroy(this.gameObject);
         }
     }
+
+    public void UpdateColor(Color newColor)
+    {
+        if (coloredSprite)
+        {
+            GetComponent<SpriteRenderer>().color = newColor;
+        }
+    }
 }

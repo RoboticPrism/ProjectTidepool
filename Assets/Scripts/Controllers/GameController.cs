@@ -44,9 +44,9 @@ public class GameController : MonoBehaviour {
 	void Start () {
 		mousePlacer.coloredSprite = player.selectedSegment.coloredSprite;
         mousePlacer.uncoloredSprite = player.selectedSegment.uncoloredSprite;
-        mousePlacer.color = player.playerColor;
+        mousePlacer.color = player.color;
 
-        rotationPreview.SetSegment(player.selectedSegment, player.playerColor);
+        rotationPreview.SetSegment(player.selectedSegment, player.color);
 
 
         rotationPreview.upButton.onClick.AddListener(() => SetDirection(Creature.rotations.UP));
@@ -97,8 +97,8 @@ public class GameController : MonoBehaviour {
 	public void setSegment(Segment segment){
         player.selectedSegment = segment;
 
-        mousePlacer.SetSegment(segment, player.playerColor);
-        rotationPreview.SetSegment(segment, player.playerColor);
+        mousePlacer.SetSegment(segment, player.color);
+        rotationPreview.SetSegment(segment, player.color);
         SetDirection(Creature.rotations.UP);
 
 	}

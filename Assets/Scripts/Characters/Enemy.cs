@@ -3,32 +3,58 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Enemy : Creature {
-	public GameObject target;
+	[Header ("State Variables")]
 	public bool active = false;
     public bool build = false;
+    public enum state { IDLE, ATTACK, RUN, EVOLVE }
+    public state currentState = state.IDLE;
 
+    public GameObject target;
+    protected List<Stimulus> nearbyStimuli = new List<Stimulus>();
+
+    [Header("Prefab Connections")]
     public Segment corePrefab;
     public Segment mouthPrefab;
+
+    [Header("Colors")]
+    public List<Color> levelColors;
+
+    [Header("Segment List")]
     public List<Segment> bodyPrefabs;
     public List<Segment> mainPrefabs;
     public List<Segment> attackPrefabs;
     public List<Segment> defensePrefabs;
     public List<Segment> movementPrefabs;
 
-    public List<Stimulus> nearbyStimuli = new List<Stimulus>();
+    [Header("Generation Variables")]
+    [Tooltip("How much of the allotted budget will be spent on body blocks")]
+    [Range(0f,1f)]
+    public float bodyRatio = 0.3f;
+    [Tooltip("How much of the allotted budget will be spent on main segments")]
+    [Range(0f, 1f)]
+    public float mainRatio = 0.1f;
+    [Tooltip("How much of the allotted budget will be spent on attack segments")]
+    [Range(0f, 1f)]
+    public float attackRatio = 0.3f;
+    [Tooltip("How much of the allotted budget will be spent on movement segments")]
+    [Range(0f, 1f)]
+    public float movementRatio = 0.3f;
 
-    // AI vars
-    float threatToWorthRatio = 5f; // how much this creature values safety to rewards, we can mix this around later for fun results
-    float threatToEvolveRatio = 5f; // how much this creature values safety to being able to evolve, we can mix this around later for fun results
-    int evolveThreshold = 100; // minimum number of points required to begin considering evolving as an option
-
-    public enum state { IDLE, ATTACK, RUN, EVOLVE }
-    public state currentState = state.IDLE;
+    [Header("AI Behavior Variables")]
+    [Tooltip("Multiplier for how much AI prioritizes safety to rewards")]
+    public float threatToWorthMultiplier = 10f;
+    [Tooltip("Multiplier for how much AI prioritizes evolving to being safe")]
+    public float threatToEvolveMultiplier = 10f;
+    [Tooltip("Multiplier for how much more threatening everything appears when at low health")]
+    public float damageThreatMultiplier = 10f;
+    [Tooltip("The threshold of evo points before an AI starts looking to evolve")]
+    public int evolveThreshold = 100;    
 
     // Use this for initialization
     new void Start () {
 		base.Start ();
         totalEnergy = 1;
+        UpdateColor();
         Generate();
 	}
 	
@@ -87,7 +113,6 @@ public class Enemy : Creature {
         float currentThreat = 0; // total threat value of the area
         Stimulus bestWorth = null;
         Stimulus worstThreat = null;
-        List<Stimulus> removeList = new List<Stimulus>();
 
         // remove any stimuli that may have gotten deleted (i.e. eaten)
         nearbyStimuli.RemoveAll(stim => stim == null);
@@ -112,12 +137,16 @@ public class Enemy : Creature {
             currentThreat += sThreat;
         }
 
+        // if low health, threats appear worse
+        float missingHealthPerc = (totalHealth - health) / totalHealth;
+        currentThreat = missingHealthPerc * damageThreatMultiplier;
+
         // make state swap based on evaluation
-        if (evoPoints >= evolveThreshold && currentThreat * threatToEvolveRatio < evoPoints)
+        if (evoPoints >= evolveThreshold && currentThreat * threatToEvolveMultiplier < evoPoints)
         {
             currentState = state.EVOLVE;
         }
-        else if (bestWorth && currentThreat * threatToWorthRatio < currentHunger)
+        else if (bestWorth && currentThreat * threatToWorthMultiplier < currentHunger)
         {
             target = bestWorth.gameObject;
             currentState = state.ATTACK;
@@ -132,13 +161,23 @@ public class Enemy : Creature {
             target = null;
             currentState = state.IDLE;
         }
+
+        // perform actions when close to target
+        if (target && Vector3.Distance(target.transform.position, transform.position) < 10f && energy > 0.5f)
+        {
+            action = true;
+        }
+        else if (energy <= 0)
+        {
+            action = false;
+        }
     }
 
     // run towards a given target
     void SteerTowards(GameObject obj)
     {
         speed = Mathf.Max(1f, totalSpeed/weight);
-        float totalRotationSpeed = totalSpeed * rotationRatio;
+        float totalRotationSpeed = speed * rotationRatio;
         if (obj != null)
         {
             // rotation
@@ -306,13 +345,13 @@ public class Enemy : Creature {
         }
         
         // Generate in a smart enough order
-        GenerateParts((int)(totalEvoPoints * 0.3f), validBodyPrefabs);
+        GenerateParts((int)(totalEvoPoints * bodyRatio), validBodyPrefabs);
         
         // Manually generate a mouth on the front, otherwise stuff gets... weird...
         GenerateMouth();
-        GenerateParts((int)(totalEvoPoints * 0.1f), validMainPrefabs);
-        GenerateParts((int)(totalEvoPoints * 0.3f), validAttackPrefabs);
-        GenerateParts((int)(totalEvoPoints * 0.3f), validMovementPrefabs);
+        GenerateParts((int)(totalEvoPoints * mainRatio), validMainPrefabs);
+        GenerateParts((int)(totalEvoPoints * attackRatio), validAttackPrefabs);
+        GenerateParts((int)(totalEvoPoints * movementRatio), validMovementPrefabs);
     }
 
     // generates a copy of an existing enemy layout
@@ -400,9 +439,18 @@ public class Enemy : Creature {
 	void Upgrade()
     {
         level += 1;
+        UpdateColor();
         Generate();
         build = false;
         Destroy(this.eggObject);
         Instantiate(brokenEggPrefab, this.transform.position, this.transform.rotation);
+    }
+
+    protected void UpdateColor()
+    {
+        if (level >= 0 && level < levelColors.Count)
+        {
+            UpdateColor(levelColors[level]);
+        }
     }
 }

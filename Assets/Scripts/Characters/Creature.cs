@@ -4,33 +4,35 @@ using System.Collections.Generic;
 
 public class Creature : MonoBehaviour {
 
-	public Color playerColor = new Color(255,255,255,255);
+	public Color color = new Color(255,255,255,255);
+    public Sprite CoreDead;
 
-	//Segment Prefabs
-	public GameObject core;
-	public int level;
+    [Header("Runtime Connections")]
+    public GameObject core;
+    public Stimulus stimulus;
 
-	public Sprite CoreDead;
-
-	//Scalable Size
-	public int height = 5;
-	public int width = 5;
-    public int max_height = 5;
-    public int max_width = 5;
-
-	//Segment Storage
-	public Segment[,] segments;
-	public bool[,] placeable;
-
-    // Egg
+    [Header("Prefab Connections")]
     public GameObject eggObject;
     public GameObject eggPrefab;
     public GameObject brokenEggPrefab;
-    public int eggTime = 0;
-    public int eggTimeMax = 60;
-    public float eggScale = 2f;
 
-	//Player stats
+    //Scalable Size
+    [Header("Grid Size")]
+    public int height = 5;
+	public int width = 5;
+    protected int max_height = 5;
+    protected int max_width = 5;
+
+	//Segment Storage
+	protected Segment[,] segments;
+	protected bool[,] placeable;
+
+    // Egg timer
+    protected int eggTime = 0;
+    protected int eggTimeMax = 60;
+    protected float eggScale = 2f;
+    
+    [Header("Creature Stats")]
 	public int health = 10;
 	public int totalHealth = 10;
     public float energy = 0;
@@ -40,21 +42,21 @@ public class Creature : MonoBehaviour {
     public float totalSpeed = 0;
     public float rotationRatio = 0.5f;
 	public int weight = 1;
-	public int exp = 0;
-	protected bool dead = false;
-	protected int damageTimer = 0;
-	protected int healTimer = 0;
+	
+    public int evoPoints;
+    public int level;
 
+    // state
+    protected bool dead = false;
+    protected int damageTimer = 0;
+    protected int healTimer = 0;
     public bool action = false;
     
-    // Creature quick stats
-    public int evoPoints;
-    public Stimulus stimulus;
-
+    
     public enum rotations { UP, DOWN, LEFT, RIGHT}
 
     // used by orphaned piece checker
-    List<Segment> checkedSegments;
+    private List<Segment> checkedSegments;
 
     // Use this for initialization
     protected void Start () {
@@ -67,7 +69,7 @@ public class Creature : MonoBehaviour {
 		                                                     Quaternion.Euler(new Vector3(0,0,0)))).GetComponent<Segment>();
 		segments [max_height, max_width].transform.parent = transform;
 		segments [max_height, max_width].GetComponent<Segment> ().creature = this;
-		segments [max_height, max_width].GetComponent<SpriteRenderer> ().color = playerColor;
+		segments [max_height, max_width].GetComponent<SpriteRenderer> ().color = color;
         RecalculatePlace(Vector2.zero);
         RecalculateNeighborPlaces(Vector2.zero);
     }
@@ -382,7 +384,7 @@ public class Creature : MonoBehaviour {
                 RecalculateNeighborPlaces(buildUnits);
                 
                 // set color
-                newSegment.GetComponent<SpriteRenderer>().color = playerColor;
+                newSegment.GetComponent<SpriteRenderer>().color = color;
 
                 // set stats
                 UpdateEvoPoints(evoPoints - segment.pointCost);
@@ -448,6 +450,18 @@ public class Creature : MonoBehaviour {
             SetSegmentAt(buildUnits, null);
             RecalculatePlace(buildUnits);
             RecalculateNeighborPlaces(buildUnits);
+        }
+    }
+
+    protected void UpdateColor(Color newColor)
+    {
+        color = newColor;
+        foreach(Segment segment in segments)
+        {
+            if (segment != null)
+            {
+                segment.UpdateColor(newColor);
+            }
         }
     }
 
