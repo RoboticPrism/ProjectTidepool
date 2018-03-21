@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class EnemySpawner : MonoBehaviour {
 	public GameObject target;
@@ -8,6 +9,8 @@ public class EnemySpawner : MonoBehaviour {
 	public int rangeMax=60;
 	public int maxEnemies = 15;
 	Vector3 loc = new Vector3(0,0,0);
+    List<Enemy> enemyList = new List<Enemy>();
+    
 	// Use this for initialization
 	void Start () {
 	
@@ -15,10 +18,18 @@ public class EnemySpawner : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (GameObject.FindGameObjectsWithTag ("Enemy").Length < maxEnemies) {
+        enemyList.RemoveAll(enemy => enemy == null);
+		if (enemyList.Count < maxEnemies) {
 			CreateEnemy();
 		}
-		if (target != null) {
+        // if any enemies are too far away, delete them
+        foreach (Enemy enemy in enemyList)
+        {
+            if (Vector3.Distance(loc, enemy.transform.position) > rangeMax * 2) {
+                Destroy(enemy.gameObject);
+            }
+        }
+		if (target) {
 			loc = target.transform.position;
 		}
 	}
@@ -46,5 +57,6 @@ public class EnemySpawner : MonoBehaviour {
         newEnemy.active = act;
         newEnemy.level = power;
         newEnemy.evoPoints = 50 * (power + 2);
+        enemyList.Add(newEnemy);
 	}
 }

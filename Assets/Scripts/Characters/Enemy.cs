@@ -139,7 +139,7 @@ public class Enemy : Creature {
 
         // if low health, threats appear worse
         float missingHealthPerc = (totalHealth - health) / totalHealth;
-        currentThreat = missingHealthPerc * damageThreatMultiplier;
+        currentThreat += missingHealthPerc * damageThreatMultiplier;
 
         // make state swap based on evaluation
         if (evoPoints >= evolveThreshold && currentThreat * threatToEvolveMultiplier < evoPoints)
