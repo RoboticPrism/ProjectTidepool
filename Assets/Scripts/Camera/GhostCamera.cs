@@ -6,10 +6,10 @@ public class GhostCamera : MonoBehaviour {
 
     float speed = 1f;
 
-    float zoomLevel = 10;
-    float zoomMin = 10;
-    float zoomMax = 20;
-    float zoomSpeed = 2f;
+    float zoomLevel = 20;
+    public float zoomMin = 10;
+    public float zoomMax = 30;
+    public float zoomSpeed = 10f;
     Camera thisCamera;
 	// Use this for initialization
 	void Start () {

@@ -40,9 +40,12 @@ public class Creature : MonoBehaviour {
     protected float speed = 0;
     protected float rotationSpeed = 0;
     public float totalSpeed = 0;
-    public float rotationRatio = 0.5f;
+    
 	public int weight = 1;
-	
+
+    public float rotationRatio = 0.5f;
+    public float moveRatio = 0.5f;
+
     public int evoPoints;
     public int level;
 
@@ -652,6 +655,11 @@ public class Creature : MonoBehaviour {
                     Stimulus s = g.AddComponent<Stimulus>();
                     s.worth = seg.pointCost / 2;
                     s.threat = 0;
+
+                    // add new collider
+                    CircleCollider2D cc = g.AddComponent<CircleCollider2D>();
+                    cc.radius = GetComponent<CircleCollider2D>().radius;
+                    cc.isTrigger = true;
 
 					Destroy (_currentSegement);
                     SetSegmentAt(ArrayToBuildUnits(new Vector2(x, y)), null);

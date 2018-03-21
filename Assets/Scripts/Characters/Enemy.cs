@@ -41,14 +41,16 @@ public class Enemy : Creature {
     public float movementRatio = 0.3f;
 
     [Header("AI Behavior Variables")]
-    [Tooltip("Multiplier for how much AI prioritizes safety to rewards")]
-    public float threatToWorthMultiplier = 10f;
     [Tooltip("Multiplier for how much AI prioritizes evolving to being safe")]
     public float threatToEvolveMultiplier = 10f;
     [Tooltip("Multiplier for how much more threatening everything appears when at low health")]
     public float damageThreatMultiplier = 10f;
+    [Tooltip("Multiplier for how much more likely an enemy is to prioritize food over attacking")]
+    public float eatToAttackMultiplier = 10f;
     [Tooltip("The threshold of evo points before an AI starts looking to evolve")]
-    public int evolveThreshold = 100;    
+    public int evolveThreshold = 100;
+    [Tooltip("How much more threatening an area is than the AI before it panics and runs away")]
+    public float panicThreshold = 30f;
 
     // Use this for initialization
     new void Start () {
@@ -91,25 +93,31 @@ public class Enemy : Creature {
 
     void OnTriggerEnter2D(Collider2D col)
     {
-        Stimulus s = col.GetComponent<Stimulus>();
-        if (s)
+        // only track the parent creature or dead segments
+        Stimulus stim = col.GetComponent<Stimulus>();
+        Creature cr = col.GetComponent<Creature>();
+        Segment seg = col.GetComponent<Segment>();
+        if (stim && (cr || (seg && seg.creature == null)) && !nearbyStimuli.Contains(stim))
         {
-            nearbyStimuli.Add(s);
+            nearbyStimuli.Add(stim);
         }
     }
 
     void OnTriggerExit2D(Collider2D col)
     {
-        Stimulus s = col.GetComponent<Stimulus>();
-        if (s)
+        // only untrack the parent creature or dead segments
+        Stimulus stim = col.GetComponent<Stimulus>();
+        Creature cr = col.GetComponent<Creature>();
+        Segment seg = col.GetComponent<Segment>();
+        if (stim && (cr || (seg && seg.creature == null)))
         {
-            nearbyStimuli.Remove(s);
+            nearbyStimuli.Remove(stim);
         }
     }
 
     void FindTarget()
     {
-        float currentHunger = 0; // total point worth in the area
+        float targetWorth = 0; // total points the target is worth
         float currentThreat = 0; // total threat value of the area
         Stimulus bestWorth = null;
         Stimulus worstThreat = null;
@@ -118,35 +126,39 @@ public class Enemy : Creature {
         nearbyStimuli.RemoveAll(stim => stim == null);
 
         // evaluate local area
-        foreach (Stimulus stimulus in nearbyStimuli)
+        foreach (Stimulus otherStimulus in nearbyStimuli)
         {
             float radius = GetComponent<CircleCollider2D>().radius;
-            float sWorth = stimulus.worth * (radius/Vector3.Distance(stimulus.transform.position, transform.position));
-            float sThreat = stimulus.threat * (radius/Vector3.Distance(stimulus.transform.position, transform.position));
+            float distanceMultiplier = ((radius * 2) - Vector3.Distance(otherStimulus.transform.position, transform.position))/(radius * 2);
+            float sWorth = otherStimulus.worth * distanceMultiplier;
+            float sThreat = otherStimulus.threat * distanceMultiplier;
 
-            if (bestWorth == null || bestWorth.worth < stimulus.worth)
+            if (otherStimulus.GetComponent<Segment>())
             {
-                bestWorth = stimulus;
+                sWorth *= eatToAttackMultiplier;
             }
-            if (worstThreat == null || worstThreat.threat < stimulus.threat)
+            if (bestWorth == null || bestWorth.worth < sWorth && bestWorth.threat <= stimulus.threat)
             {
-                worstThreat = stimulus;
+                bestWorth = otherStimulus;
             }
-
-            currentHunger += sWorth;
+            if (worstThreat == null || worstThreat.threat < sThreat)
+            {
+                worstThreat = otherStimulus;
+            }
+            targetWorth = sWorth;
             currentThreat += sThreat;
         }
 
         // if low health, threats appear worse
         float missingHealthPerc = (totalHealth - health) / totalHealth;
         currentThreat += missingHealthPerc * damageThreatMultiplier;
-
+        
         // make state swap based on evaluation
         if (evoPoints >= evolveThreshold && currentThreat * threatToEvolveMultiplier < evoPoints)
         {
             currentState = state.EVOLVE;
         }
-        else if (bestWorth && currentThreat * threatToWorthMultiplier < currentHunger)
+        else if (bestWorth && currentThreat - stimulus.threat < panicThreshold)
         {
             target = bestWorth.gameObject;
             currentState = state.ATTACK;
@@ -224,10 +236,10 @@ public class Enemy : Creature {
             }
             else if (dist > 3)
             {
-                speed = totalSpeed;
+                speed = speed * moveRatio;
             } else
             {
-                speed = totalSpeed/2;
+                speed = speed/2 * moveRatio;
             }
             transform.Translate(Vector3.up * speed / 50);
         }
