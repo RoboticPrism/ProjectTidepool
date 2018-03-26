@@ -372,6 +372,48 @@ public class Enemy : Creature {
 
     }
 
+    void Regenerate()
+    {
+        MakeMoreBuildSpace();
+        Generate();
+    }
+
+    // if there aren't any open build spaces, remove some single directional pieces to make some
+    void MakeMoreBuildSpace()
+    {
+        bool openSpaces = false;
+        foreach (bool space in placeable)
+        {
+            if (space)
+            {
+                openSpaces = true;
+                break;
+            }
+        }
+        if (!openSpaces)
+        {
+            // TODO: Randomize vertical vs horizontal priority
+            // search for pieces to remove, starting near the center (start at 1 because edge pieces can't be extended further)
+            for(int i = 0; i < max_width; i++)
+            {
+                // start from the center height and work up/down by 1
+                for(int j = 0; j < max_height; j++)
+                {
+                    Segment s1 = GetSegmentAt(new Vector2(i, j));
+                    Segment s2 = GetSegmentAt(new Vector2(i, -j));
+                    if (s1 && !s1.multidirectional)
+                    {
+                        RemoveSegmentYSymmetrical(new Vector2(i, j));
+                    }
+                    else if (s2 && !s2.multidirectional)
+                    {
+                        RemoveSegmentYSymmetrical(new Vector2(i, -j));
+                    }
+                }
+            }
+        }
+    }
+
     // special generation to make sure a mouth always generates
     void GenerateMouth() {
         foreach (Vector2 validBuildSpace in ValidBuildSpaces())
@@ -452,7 +494,7 @@ public class Enemy : Creature {
     {
         level += 1;
         UpdateColor();
-        Generate();
+        Regenerate();
         build = false;
         Destroy(this.eggObject);
         Instantiate(brokenEggPrefab, this.transform.position, this.transform.rotation);

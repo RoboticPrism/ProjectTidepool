@@ -431,6 +431,12 @@ public class Creature : MonoBehaviour {
         CheckForOrphanedPieces();
 	}
 
+    public void RemoveSegmentYSymmetrical(Vector2 buildUnits)
+    {
+        RemoveSegment(buildUnits);
+        RemoveSegment(new Vector2(-buildUnits.x, buildUnits.y));
+    }
+
     // remove segment but without the orphaned piece check, for use with orphaned piece check cleanup
     void RemoveSegmentWithoutChecks(Vector2 buildUnits)
     {
