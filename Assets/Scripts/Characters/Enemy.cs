@@ -88,6 +88,16 @@ public class Enemy : Creature {
                     }
                     break;
             }
+            if(currentState != state.EVOLVE)
+            {
+                if(eggTime > 0)
+                {
+                    eggTime -= 1;
+                } else
+                {
+                    eggTime = 0;
+                }
+            }
         }
 	}
 
@@ -137,7 +147,8 @@ public class Enemy : Creature {
             {
                 sWorth *= eatToAttackMultiplier;
             }
-            if (bestWorth == null || bestWorth.worth < sWorth && bestWorth.threat <= stimulus.threat)
+            // never add anything more threatening than you as a best worth
+            if ((bestWorth == null && otherStimulus.threat <= stimulus.threat) || (bestWorth && bestWorth.worth < sWorth && bestWorth.threat <= stimulus.threat))
             {
                 bestWorth = otherStimulus;
             }
@@ -232,7 +243,7 @@ public class Enemy : Creature {
             float dist = Vector3.Distance(obj.transform.position, transform.position);
             if (Mathf.Abs(angularDiff) > 90)
             {
-                speed = 0;
+                speed = speed/10f;
             }
             else if (dist > 3)
             {
