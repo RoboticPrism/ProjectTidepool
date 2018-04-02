@@ -27,7 +27,7 @@ public class BrokenEgg : MonoBehaviour {
         }
         if (lifeTime <= 0)
         {
-            Destroy(this);
+            Destroy(this.gameObject);
         }
 	}
 }

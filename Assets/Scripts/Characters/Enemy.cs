@@ -9,7 +9,9 @@ public class Enemy : Creature {
     public enum state { IDLE, ATTACK, RUN, EVOLVE }
     public state currentState = state.IDLE;
 
+    [Header("Connections")]
     public GameObject target;
+    public EnemySpawner spawner;
     protected List<Stimulus> nearbyStimuli = new List<Stimulus>();
 
     [Header("Prefab Connections")]
@@ -259,8 +261,8 @@ public class Enemy : Creature {
     // run away from a given target
     void SteerAway(GameObject obj)
     {
-        speed = totalSpeed / weight;
-        float totalRotationSpeed = totalSpeed * rotationRatio;
+        speed = Mathf.Max(1f, totalSpeed / weight);
+        float totalRotationSpeed = speed * rotationRatio; 
         if (obj != null)
         {
             // rotation
@@ -503,6 +505,8 @@ public class Enemy : Creature {
 
 	void Upgrade()
     {
+        // we lived long enough to upgrade so this is a winning design
+        spawner.RegisterDesign(this);
         level += 1;
         UpdateColor();
         Regenerate();
