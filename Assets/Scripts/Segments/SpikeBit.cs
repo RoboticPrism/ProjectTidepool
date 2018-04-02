@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpikeBit : Segment {
+public class SpikeBit : MonoBehaviour {
+    Creature creature;
     private int attCooldown = 100;
     private int attCooldownMax = 100;
     public GameObject damageEffect;
@@ -11,12 +12,15 @@ public class SpikeBit : Segment {
         creature = transform.parent.GetComponent<Segment>().creature;
     }
 
-    new void FixedUpdate()
+    void FixedUpdate()
     {
-        base.FixedUpdate();
         if (attCooldown < attCooldownMax)
         {
             attCooldown++;
+        }
+        if (creature == null)
+        {
+            Destroy(this.gameObject);
         }
     }
 

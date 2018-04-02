@@ -5,10 +5,6 @@ public class Spike : Segment {
     public float retractDist = -0.5f;
     public float retractSpeed = 0.05f;
     public GameObject spikeBit;
-    // Use this for initialization
-    void Start() {
-
-    }
 
     new void FixedUpdate()
     {

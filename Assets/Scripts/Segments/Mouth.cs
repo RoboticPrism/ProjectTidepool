@@ -5,11 +5,6 @@ public class Mouth : Segment {
 	private int attCooldown = 50;
 	private int attCooldownMax = 50;
 	public GameObject damageEffect;
-	// Use this for initialization
-	void Start ()
-    {
-        
-	}
 	
 	new void FixedUpdate ()
     {

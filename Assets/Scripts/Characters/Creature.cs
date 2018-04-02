@@ -70,6 +70,7 @@ public class Creature : MonoBehaviour {
 		segments[max_height,max_width] = ((GameObject)Instantiate(core, 
 		                                                     this.transform.position+new Vector3(0,0,0), 
 		                                                     Quaternion.Euler(new Vector3(0,0,0)))).GetComponent<Segment>();
+        segments[max_height, max_width].Start();
 		segments [max_height, max_width].transform.parent = transform;
 		segments [max_height, max_width].GetComponent<Segment> ().creature = this;
 		segments [max_height, max_width].GetComponent<SpriteRenderer> ().color = color;

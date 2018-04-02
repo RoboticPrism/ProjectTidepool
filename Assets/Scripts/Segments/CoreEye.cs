@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CoreEye : Segment {
-
+public class CoreEye : MonoBehaviour {
+    Creature creature;
     GameObject target;
 
 	// Use this for initialization
@@ -16,9 +16,8 @@ public class CoreEye : Segment {
 		
 	}
 
-    new void FixedUpdate ()
+    void FixedUpdate ()
     {
-        base.FixedUpdate();
         // eye tracks closest creature for player
         if (creature)
         {

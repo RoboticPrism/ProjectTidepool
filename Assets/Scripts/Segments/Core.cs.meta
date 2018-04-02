@@ -3,6 +3,7 @@ guid: 4cb17e2103ef79247b789b80437656e8
 timeCreated: 1496083670
 licenseType: Free
 MonoImporter:
+  externalObjects: {}
   serializedVersion: 2
   defaultReferences:
   - creature: {instanceID: 0}
