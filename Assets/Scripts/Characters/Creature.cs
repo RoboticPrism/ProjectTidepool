@@ -656,7 +656,9 @@ public class Creature : MonoBehaviour {
                     seg.creature = null;
 
                     // add rigidbody
-                    g.AddComponent<Rigidbody2D>().drag = 3;
+                    Rigidbody2D rg = g.AddComponent<Rigidbody2D>();
+                    rg.drag = 3;
+                    rg.mass = 0.1f;
 
                     // add new stimulus
                     Stimulus s = g.AddComponent<Stimulus>();

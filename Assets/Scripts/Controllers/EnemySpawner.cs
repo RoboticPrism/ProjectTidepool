@@ -8,6 +8,7 @@ public class EnemySpawner : MonoBehaviour {
 	public int rangeMin=30;
 	public int rangeMax=60;
 	public int maxEnemies = 15;
+    public int maxDesignPoolSize = 5;
 	Vector3 loc = new Vector3(0,0,0);
     List<Enemy> enemyList = new List<Enemy>();
     public List<Enemy>[] designList = new List<Enemy>[6];
@@ -50,6 +51,11 @@ public class EnemySpawner : MonoBehaviour {
             newDesignEnemy.target = null;
             // add to list
             designList[newEnemy.level].Add(newDesignEnemy);
+            // keep pool within max size
+            if(designList[newEnemy.level].Count > maxDesignPoolSize)
+            {
+                designList[newEnemy.level].RemoveAt(designList[newEnemy.level].Count - 1);
+            }
         }
     }
 
