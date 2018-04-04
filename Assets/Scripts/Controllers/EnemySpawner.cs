@@ -105,33 +105,51 @@ public class EnemySpawner : MonoBehaviour {
     // creates a new enemy either randomly or from the pool
     void CreateEnemy()
     {
+        // pick a spawn location
+        int radius = Random.Range(0, 360);
+        int distance = Random.Range(rangeMin, rangeMax);
+        Vector3 location = new Vector3(
+                    loc.x + Mathf.Cos(radius) * distance,
+                    loc.y + Mathf.Sin(radius) * distance,
+                    0
+                );
+
+        // cancel if this location will drop the new enemy into another creature
+        if (Physics2D.OverlapCircle(location, 5))
+        {
+            return;
+        }
+
+        // choose what level enemy to spawn
         int power = Random.Range(0, 5);
+
+        // figure out if enemy should be active upon spawn
+        bool act = true;
+        if (target != null && target.GetComponent<Player>())
+        {
+            act = !target.GetComponent<Player>().build;
+        }
+        else
+        {
+            act = true;
+        }
+
+        // decide if we are creating a copy or making a new random
         if (designList[power] != null && designList[power].Count > 0)
         {
-            CreateDesignedEnemy(power);
+            CreateDesignedEnemy(power, act, location);
         } else
         {
-            CreateRandomEnemy(power);
+            CreateRandomEnemy(power, act, location);
         }
     }
 
     // creates a new random enemy of a random level in a random place
-	void CreateRandomEnemy(int power){
-		int radius = Random.Range (0, 360);
-		int distance = Random.Range (rangeMin, rangeMax);
-		bool act = true;
-		if (target != null && target.GetComponent<Player>()) {
-			act = !target.GetComponent<Player>().build;
-		} else {
-			act=true;
-		}
+	void CreateRandomEnemy(int power, bool act, Vector3 location)
+    {
 		GameObject g = Instantiate(
                 enemyPrefab, 
-                new Vector3(
-                    loc.x + Mathf.Cos(radius) * distance,
-                    loc.y + Mathf.Sin(radius) * distance, 
-                    0
-                ),
+                location,
                 Quaternion.Euler(new Vector3(0, 0, 0)));
         Enemy newEnemy = g.GetComponent<Enemy>();
         newEnemy.active = act;
@@ -142,26 +160,11 @@ public class EnemySpawner : MonoBehaviour {
 	}
 
     // creates a copy of an existing winning design
-    void CreateDesignedEnemy(int power)
+    void CreateDesignedEnemy(int power, bool act, Vector3 location)
     {
-        int radius = Random.Range(0, 360);
-        int distance = Random.Range(rangeMin, rangeMax);
-        bool act = true;
-        if (target != null && target.GetComponent<Player>())
-        {
-            act = !target.GetComponent<Player>().build;
-        }
-        else
-        {
-            act = true;
-        }
         GameObject g = Instantiate(
                 designList[power][Random.Range(0, designList[power].Count)].gameObject,
-                new Vector3(
-                    loc.x + Mathf.Cos(radius) * distance,
-                    loc.y + Mathf.Sin(radius) * distance,
-                    0
-                ),
+                location,
                 Quaternion.Euler(new Vector3(0, 0, 0)));
         g.SetActive(true);
         Enemy newEnemy = g.GetComponent<Enemy>();
