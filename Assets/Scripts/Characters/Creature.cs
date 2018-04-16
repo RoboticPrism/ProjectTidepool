@@ -152,6 +152,14 @@ public class Creature : MonoBehaviour {
     // converts world space degrees to a rotation, defaults to UP if not valid
     public static rotations IntToRotation(int degrees)
     {
+        while(degrees < 0)
+        {
+            degrees += 360;
+        }
+        while(degrees > 360)
+        {
+            degrees -= 360;
+        }
         switch (degrees)
         {
             case 0:
@@ -533,22 +541,22 @@ public class Creature : MonoBehaviour {
             }
         } else
         {
-            if (IntToRotation((int)currentSegment.transform.rotation.eulerAngles.z) == rotations.UP)
+            if (IntToRotation((int)currentSegment.transform.localRotation.eulerAngles.z) == rotations.UP)
             {
                 otherSegment = GetSegmentAt(buildUnits + Vector2.down);
                 currentSegment.attachedToCore = otherSegment != null && otherSegment.attachedToCore;
             }
-            else if (IntToRotation((int)currentSegment.transform.rotation.eulerAngles.z) == rotations.DOWN)
+            else if (IntToRotation((int)currentSegment.transform.localRotation.eulerAngles.z) == rotations.DOWN)
             {
                 otherSegment = GetSegmentAt(buildUnits + Vector2.up);
                 currentSegment.attachedToCore = otherSegment != null && otherSegment.attachedToCore;
             }
-            else if (IntToRotation((int)currentSegment.transform.rotation.eulerAngles.z) == rotations.LEFT)
+            else if (IntToRotation((int)currentSegment.transform.localRotation.eulerAngles.z) == rotations.LEFT)
             {
                 otherSegment = GetSegmentAt(buildUnits + Vector2.right);
                 currentSegment.attachedToCore = otherSegment != null && otherSegment.attachedToCore;
             }
-            else if (IntToRotation((int)currentSegment.transform.rotation.eulerAngles.z) == rotations.RIGHT)
+            else if (IntToRotation((int)currentSegment.transform.localRotation.eulerAngles.z) == rotations.RIGHT)
             {
                 otherSegment = GetSegmentAt(buildUnits + Vector2.left);
                 currentSegment.attachedToCore = otherSegment != null && otherSegment.attachedToCore;
@@ -565,7 +573,7 @@ public class Creature : MonoBehaviour {
             if (otherSegment.multidirectional)
             {
                 CheckIfOrphanedPiece(buildUnits + Vector2.up);
-            } else if (IntToRotation((int)otherSegment.transform.rotation.eulerAngles.z) == rotations.UP)
+            } else if (IntToRotation((int)otherSegment.transform.localRotation.eulerAngles.z) == rotations.UP)
             {
                 CheckIfOrphanedPiece(buildUnits + Vector2.up);
             }
@@ -578,7 +586,7 @@ public class Creature : MonoBehaviour {
             {
                 CheckIfOrphanedPiece(buildUnits + Vector2.down);
             }
-            else if (IntToRotation((int)otherSegment.transform.rotation.eulerAngles.z) == rotations.DOWN)
+            else if (IntToRotation((int)otherSegment.transform.localRotation.eulerAngles.z) == rotations.DOWN)
             {
                 CheckIfOrphanedPiece(buildUnits + Vector2.down);
             }
@@ -591,7 +599,7 @@ public class Creature : MonoBehaviour {
             {
                 CheckIfOrphanedPiece(buildUnits + Vector2.left);
             }
-            else if (IntToRotation((int)otherSegment.transform.rotation.eulerAngles.z) == rotations.LEFT)
+            else if (IntToRotation((int)otherSegment.transform.localRotation.eulerAngles.z) == rotations.LEFT)
             {
                 CheckIfOrphanedPiece(buildUnits + Vector2.left);
             }
@@ -604,7 +612,7 @@ public class Creature : MonoBehaviour {
             {
                 CheckIfOrphanedPiece(buildUnits + Vector2.right);
             }
-            else if (IntToRotation((int)otherSegment.transform.rotation.eulerAngles.z) == rotations.RIGHT)
+            else if (IntToRotation((int)otherSegment.transform.localRotation.eulerAngles.z) == rotations.RIGHT)
             {
                 CheckIfOrphanedPiece(buildUnits + Vector2.right);
             }
