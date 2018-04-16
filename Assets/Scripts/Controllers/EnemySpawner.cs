@@ -156,6 +156,14 @@ public class EnemySpawner : MonoBehaviour {
         newEnemy.level = power;
         newEnemy.evoPoints = 50 * (power + 2);
         newEnemy.spawner = this;
+
+        // set thresholds and multipliers
+        newEnemy.threatToEvolveMultiplier = Random.Range(newEnemy.theatToEvolveMultiplierRange.x, newEnemy.theatToEvolveMultiplierRange.y);
+        newEnemy.damageThreatMultiplier = Random.Range(newEnemy.damageThreatMultiplierRange.x, newEnemy.damageThreatMultiplierRange.y);
+        newEnemy.eatToAttackMultiplier = Random.Range(newEnemy.eatToAttackMultiplierRange.x, newEnemy.eatToAttackMultiplierRange.y);
+        newEnemy.evolveThreshold = (int)Random.Range(newEnemy.evolveThresholdRange.x, newEnemy.evolveThresholdRange.y);
+        newEnemy.panicThreshold = Random.Range(newEnemy.panicThresholdRange.x, newEnemy.panicThresholdRange.y);
+
         enemyList.Add(newEnemy);
 	}
 
