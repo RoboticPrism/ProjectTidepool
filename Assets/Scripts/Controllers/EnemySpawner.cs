@@ -30,10 +30,8 @@ public class EnemySpawner : MonoBehaviour {
 
     [Header("Mutation Settings")]
     [Tooltip("The range of behavior mutations to perform")]
-    [MinMaxSlider(0, 5, false)]
     public Vector2 behaviorMutationRange = new Vector2();
     [Tooltip("The range of segment mutations to perform")]
-    [MinMaxSlider(0, 5, false)]
     public Vector2 segmentMutationRange = new Vector2();
 
     Vector3 loc = new Vector3(0, 0, 0);

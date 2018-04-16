@@ -47,35 +47,30 @@ public class Enemy : Creature {
     public float threatToEvolveMultiplier = 10f;
 
     [Tooltip("The range the multiplier can be within for enemies")]
-    [MinMaxSlider(1f, 50f, false)]
     public Vector2 theatToEvolveMultiplierRange = new Vector2(1f, 50f);
 
     [Tooltip("Multiplier for how much more threatening everything appears when at low health")]
     public float damageThreatMultiplier = 10f;
 
     [Tooltip("The range the multiplier can be within for enemies")]
-    [MinMaxSlider(1f, 50f, false)]
     public Vector2 damageThreatMultiplierRange = new Vector2(1f, 50f);
 
     [Tooltip("Multiplier for how much more likely an enemy is to prioritize food over attacking")]
     public float eatToAttackMultiplier = 10f;
 
     [Tooltip("The range the multiplier can be within for enemies")]
-    [MinMaxSlider(1f, 50f, false)]
     public Vector2 eatToAttackMultiplierRange = new Vector2(1f, 50f);
 
     [Tooltip("The threshold of evo points before an AI starts looking to evolve")]
     public int evolveThreshold = 100;
 
     [Tooltip("The range the threshold can be within for enemies")]
-    [MinMaxSlider(50, 500, false)]
     public Vector2 evolveThresholdRange = new Vector2(50, 500);
 
     [Tooltip("How much more threatening an area is than the AI before it panics and runs away")]
     public float panicThreshold = 30f;
 
     [Tooltip("The range the multiplier can be within for enemies")]
-    [MinMaxSlider(1f, 50f, false)]
     public Vector2 panicThresholdRange = new Vector2(1f, 50f);
 
     // Use this for initialization
