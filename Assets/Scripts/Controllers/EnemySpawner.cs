@@ -20,6 +20,21 @@ public class EnemySpawner : MonoBehaviour {
     public int maxEnemies = 15;
     [Tooltip("The number of designs that can be stored at once")]
     public int maxDesignPoolSize = 5;
+    [Tooltip("The chance a random number has to beat, in which case the spawned creature will be a designed one instead of a random one")]
+    [Range(0f, 1f)]
+    public float designedChance;
+    [Tooltip("The chance a random number has to beat, in which case the spawned creature will have a mutation")]
+    [Range(0f, 1f)]
+    public float mutationChance;
+
+
+    [Header("Mutation Settings")]
+    [Tooltip("The range of behavior mutations to perform")]
+    [MinMaxSlider(0, 5, false)]
+    public Vector2 behaviorMutationRange = new Vector2();
+    [Tooltip("The range of segment mutations to perform")]
+    [MinMaxSlider(0, 5, false)]
+    public Vector2 segmentMutationRange = new Vector2();
 
     Vector3 loc = new Vector3(0, 0, 0);
     List<Enemy> enemyList = new List<Enemy>();
@@ -135,9 +150,16 @@ public class EnemySpawner : MonoBehaviour {
         }
 
         // decide if we are creating a copy or making a new random
-        if (designList[power] != null && designList[power].Count > 0)
+        if (designList[power] != null && designList[power].Count > 0 && Random.Range(0f, 1f) < designedChance)
         {
-            CreateDesignedEnemy(power, act, location);
+            if (Random.Range(0f, 1f) < mutationChance)
+            {
+                CreateDesignedEnemyWithMutations(power, act, location);
+            }
+            else
+            {
+                CreateDesignedEnemy(power, act, location);
+            }
         } else
         {
             CreateRandomEnemy(power, act, location);
@@ -178,6 +200,58 @@ public class EnemySpawner : MonoBehaviour {
         Enemy newEnemy = g.GetComponent<Enemy>();
         newEnemy.active = act;
         newEnemy.spawner = this;
+        enemyList.Add(newEnemy);
+    }
+
+    void CreateDesignedEnemyWithMutations(int power, bool act, Vector3 location)
+    {
+        GameObject g = Instantiate(
+                designList[power][Random.Range(0, designList[power].Count)].gameObject,
+                location,
+                Quaternion.Euler(new Vector3(0, 0, 0)));
+        g.SetActive(true);
+        Enemy newEnemy = g.GetComponent<Enemy>();
+        newEnemy.active = act;
+        newEnemy.spawner = this;
+
+        // mutate behavior
+        List<int> behaviors = new List<int>() { 0, 1, 2, 3, 4 };
+        List<int> changedBehaviors = new List<int>();
+        for(int i = 0; i < Random.Range(behaviorMutationRange.x, behaviorMutationRange.y); i++)
+        {
+            int rand = Random.Range(0, behaviors.Count);
+            changedBehaviors.Add(behaviors[rand]);
+            behaviors.RemoveAt(rand);
+        }
+
+        if(changedBehaviors.Contains(0))
+        {
+            newEnemy.threatToEvolveMultiplier = Random.Range(newEnemy.theatToEvolveMultiplierRange.x, newEnemy.theatToEvolveMultiplierRange.y);
+        }
+        if (changedBehaviors.Contains(1))
+        {
+            newEnemy.damageThreatMultiplier = Random.Range(newEnemy.damageThreatMultiplierRange.x, newEnemy.damageThreatMultiplierRange.y);
+        }
+        if (changedBehaviors.Contains(2))
+        {
+            newEnemy.eatToAttackMultiplier = Random.Range(newEnemy.eatToAttackMultiplierRange.x, newEnemy.eatToAttackMultiplierRange.y);
+        }
+        if (changedBehaviors.Contains(3))
+        {
+            newEnemy.evolveThreshold = (int)Random.Range(newEnemy.evolveThresholdRange.x, newEnemy.evolveThresholdRange.y);
+        }
+        if (changedBehaviors.Contains(4))
+        {
+            newEnemy.panicThreshold = Random.Range(newEnemy.panicThresholdRange.x, newEnemy.panicThresholdRange.y);
+        }
+
+        // mutate design
+        for (int i = 0; i < Random.Range(segmentMutationRange.x, segmentMutationRange.y); i++)
+        {
+            newEnemy.MakeMoreBuildSpace();
+        }
+        newEnemy.Regenerate();
+
         enemyList.Add(newEnemy);
     }
 }
